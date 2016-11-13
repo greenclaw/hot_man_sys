@@ -79,7 +79,7 @@ CREATE TABLE if not exists reservation(
 	id SERIAL PRIMARY KEY,
 	guest_id INTEGER NOT NULL REFERENCES guest,
 	room_id INTEGER NOT NULL REFERENCES room ON DELETE RESTRICT,
-	reserve_date DATE NOT NULL,
+	reserve_time TIMESTAMP NOT NULL,
 	arrive DATE NOT NULL,
 	departure DATE NOT NULL CHECK (departure > arrive)
 );
@@ -88,8 +88,8 @@ CREATE TABLE if not exists log(
 	id SERIAL PRIMARY KEY,
 	guest_id INTEGER NOT NULL REFERENCES guest,
 	room_id INTEGER NOT NULL REFERENCES room ON DELETE RESTRICT,
-	log_date DATE NOT NULL,
-	reserve_date DATE NOT NULL,
+	log_date TIMESTAMP NOT NULL,
+	reserve_time TIMESTAMP NOT NULL,
 	arrive DATE NOT NULL,
 	departure DATE NOT NULL
 );
