@@ -34,7 +34,7 @@ CREATE TABLE if not exists hotel (
 	countryName VARCHAR NOT NULL,
 	address VARCHAR,
 	url VARCHAR,
-	rating NUMERIC(3,1)
+	rating NUMERIC(3,1) CHECK(rating between 0 and 10)
 );
 
 CREATE TABLE if not exists receptionist
@@ -60,7 +60,7 @@ CREATE TABLE price(
 
 CREATE TABLE if not exists room(
 	room_id SERIAL PRIMARY KEY,
-	num INTEGER NOT NULL,
+	num INTEGER NOT NULL CHECK(num > 0),
 	hotel_id INTEGER REFERENCES hotel,
 	type INTEGER REFERENCES room_type
 );
@@ -93,4 +93,5 @@ CREATE TABLE if not exists log(
 	arrive DATE NOT NULL,
 	departure DATE NOT NULL
 );
+
 
