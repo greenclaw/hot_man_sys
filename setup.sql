@@ -1,4 +1,4 @@
-drop table if exists receptionist;
+﻿drop table if exists receptionist;
 drop table if exists manager;
 drop table if exists employee;
 drop table if exists log;
@@ -8,6 +8,21 @@ drop table if exists room;
 drop table if exists price;
 drop table if exists room_type;
 drop table if exists hotel;
+
+CREATE TABLE if not exists employee
+(
+  id SERIAL NOT NULL,
+  surname VARCHAR(50) NOT NULL,
+  firstname VARCHAR(50) NOT NULL,
+  salary MONEY NOT NULL DEFAULT 1000,
+  CONSTRAINT pk_employee PRIMARY KEY (id)
+);
+
+CREATE TABLE if not exists manager
+(
+  phone VARCHAR(12),
+  CONSTRAINT pk_manager PRIMARY KEY (id)
+) INHERITS (employee);
 
 CREATE TABLE if not exists hotel (
 	id INTEGER PRIMARY KEY,
@@ -22,10 +37,18 @@ CREATE TABLE if not exists hotel (
 	rating NUMERIC(3,1)
 );
 
+CREATE TABLE if not exists receptionist
+(
+  shift NUMERIC(1,0),
+  hotel_id INTEGER,
+  CONSTRAINT pk_receptionist PRIMARY KEY (id)
+) INHERITS (employee);
+
 CREATE TABLE if not exists room_type(
 	id SERIAL PRIMARY KEY,
 	class VARCHAR(20),
-	room_quantity NUMERIC(1)
+	capacity NUMERIC(1),
+	bed_quantity NUMERIC(1)
 );
 
 CREATE TABLE price( 
@@ -48,7 +71,8 @@ CREATE TABLE if not exists guest(
 	lastname VARCHAR NOT NULL,
 	age NUMERIC(3) NOT NULL,
 	phone VARCHAR,
-	e_mail VARCHAR
+	e_mail VARCHAR,
+	password VARCHAR
 );
 
 CREATE TABLE if not exists reservation(
@@ -69,26 +93,4 @@ CREATE TABLE if not exists log(
 	arrive DATE NOT NULL,
 	departure DATE NOT NULL
 );
-
-CREATE TABLE if not exists employee
-(
-  id SERIAL NOT NULL,
-  surname VARCHAR(50) NOT NULL,
-  firstname VARCHAR(50) NOT NULL,
-  salary MONEY NOT NULL DEFAULT 1000,
-  CONSTRAINT pk_employee PRIMARY KEY (id)
-);
-
-CREATE TABLE if not exists manager
-(
-  phone VARCHAR(12),
-  CONSTRAINT pk_manager PRIMARY KEY (id)
-) INHERITS (employee);
-
-CREATE TABLE if not exists receptionist
-(
-  shift NUMERIC(1,0),
-  hotel_id INTEGER,
-  CONSTRAINT pk_receptionist PRIMARY KEY (id)
-) INHERITS (employee);
 
