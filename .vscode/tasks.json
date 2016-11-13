@@ -16,9 +16,6 @@
             "problemMatcher": "$lessCompile"
         },
         {
-            "taskName": "sass"
-        },
-        {
             "taskName": "test",
             "args": [],
             "isTestCommand": true

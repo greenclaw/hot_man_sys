@@ -1,7 +1,6 @@
 .blocktext {
-  font-family: "Courier New", Courier, monospace; }
-
+  font-family: "Courier New", Courier, monospace;
+}
 body {
-  color: green; }
-
-/*# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3R5bGUuY3NzIiwic291cmNlcyI6WyJzdHlsZS5zY3NzIl0sInNvdXJjZXNDb250ZW50IjpbIi5ibG9ja3RleHQge1xyXG4gIGZvbnQtZmFtaWx5OiBcIkNvdXJpZXIgTmV3XCIsIENvdXJpZXIsIG1vbm9zcGFjZTtcclxufVxyXG5cclxuYm9keSB7XHJcbiAgY29sb3I6IGdyZWVuO1xyXG59Il0sIm1hcHBpbmdzIjoiQUFBQSxBQUFBLFVBQVUsQ0FBQztFQUNULFdBQVcsRUFBRSxpQ0FBa0MsR0FDaEQ7O0FBRUQsQUFBQSxJQUFJLENBQUM7RUFDSCxLQUFLLEVBQUUsS0FBTSxHQUNkIiwibmFtZXMiOltdfQ== */
+  color: purple;
+}

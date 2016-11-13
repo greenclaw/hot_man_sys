@@ -2,7 +2,6 @@
 
 var gulp = require('gulp');
 var less = require('gulp-less');
-var sass = require('gulp-sass');
 var path = require('path');
 var mocha = require('gulp-mocha');
 var browserSync = require('browser-sync');
@@ -21,17 +20,6 @@ gulp.task('less', function () {
         }))
         .pipe(gulp.dest('./src/public/styles'));
 });
-
-
-gulp.task('sass', function () {
-    return gulp.src('./src/styles/**/*.scss')
-        .pipe(sourcemaps.init())
-        .pipe(sass({ paths: [path.join(__dirname, 'scss', 'includes')] })
-            .on('error', sass.logError))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./src/public/styles'));
-});
-
 
 // run mocha tests in the ./tests folder
 gulp.task('test', function () {
@@ -96,7 +84,6 @@ gulp.task('watch', function () {
     gulp.watch('src/**/*.ts', ['build']);
     gulp.watch('tests/**/*.ts', ['buildTests']);
     gulp.watch('src/styles/**/*.less', ['less']);
-    gulp.watch('src/styles/**/*.scss', ['sass']);
 }); 
 
 gulp.task('buildAll', ['build', 'buildTests', 'less']);
