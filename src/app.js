@@ -10,13 +10,15 @@ var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 // TODO: Set up DB connection in Docker
 var pgp = require('pg-promise')();
+/*
 var db = pgp({
-    host: 'localhost',
-    port: 5433,
-    database: 'my-database-name',
-    user: 'user-name',
-    password: 'user-password'
+  host: 'localhost',
+  port: 5433,
+  database: 'my-database-name',
+  user: 'user-name',
+  password: 'user-password'
 });
+*/
 var app = express();
 // view engine setup
 app.set('views', path_1.join(__dirname, 'views'));
@@ -62,20 +64,6 @@ app.use(function (error, req, res, next) {
     });
     return null;
 });
-passport.use(new Strategy(function (username, password, cb) {
-    db.users.findByUsername(username, function (err, user) {
-        if (err) {
-            return cb(err);
-        }
-        if (!user) {
-            return cb(null, false);
-        }
-        if (user.password != password) {
-            return cb(null, false);
-        }
-        return cb(null, user);
-    });
-}));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = app;
 //# sourceMappingURL=app.js.map

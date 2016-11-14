@@ -1,7 +1,7 @@
 {
-  "name": "node-express-typescript",
-  "description": "node-express-typescript Sample Application (TypeScript)",
-  "version": "0.0.0",
+  "name": "hot_man_sys",
+  "description": "Hotel Management System",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node ./src/www.js",
@@ -23,6 +23,7 @@
     "pg-promise": "^5.3.5",
     "pug": "^2.0.0-beta6",
     "serve-favicon": "~2.2.0",
+    "shelljs": "^0.7.5",
     "vue": "^2.0.5"
   },
   "devDependencies": {

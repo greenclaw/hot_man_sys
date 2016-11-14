@@ -11,6 +11,7 @@ var Strategy = require('passport-local').Strategy;
 
 // TODO: Set up DB connection in Docker
 var pgp = require('pg-promise')();
+/*
 var db = pgp({
   host: 'localhost',
   port: 5433,
@@ -18,6 +19,7 @@ var db = pgp({
   user: 'user-name',
   password: 'user-password'
 });
+*/
 
 const app: express.Express = express();
 
@@ -75,7 +77,7 @@ app.use((error: any, req, res, next) => {
   return null;
 });
 
-
+/*
 passport.use(new Strategy(
   function(username, password, cb) {
     db.users.findByUsername(username, function(err, user) {
@@ -85,6 +87,6 @@ passport.use(new Strategy(
       return cb(null, user);
     });
   }));
-
+*/
 
 export default app;
