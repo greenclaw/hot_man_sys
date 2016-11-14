@@ -1,9 +1,18 @@
 extends layout
 
 block content
-  h1 Visual Studio Code - Starter Express Application (TypeScript)
-  p Welcome to #{title}
+  .container-fluid
+    .row
+      .col-sm-12
+        h1 #{title}
 
-  | For more information, please see the 
-  a(href='/quickstart') Quick Start
-  |.
+        table.table.table-striped
+          thead.thead-inverse
+            tr
+              each val, index in hotels[1]
+                th= index
+          tbody
+            each hotel in hotels
+              tr
+                each val, index in hotel
+                  td= val

@@ -9,6 +9,7 @@ var nodemon = require('gulp-nodemon');
 var cp = require('child_process');
 var tsb = require('gulp-tsb');
 var sourcemaps = require('gulp-sourcemaps');
+var gulpTypings = require("gulp-typings");
 
 
 // compile less files from the ./styles folder
@@ -85,6 +86,12 @@ gulp.task('watch', function () {
     gulp.watch('tests/**/*.ts', ['buildTests']);
     gulp.watch('src/styles/**/*.less', ['less']);
 }); 
+
+gulp.task("installTypings",function(){
+    var stream = gulp.src("./typings.json")
+        .pipe(gulpTypings()); //will install all typingsfiles in pipeline.
+    return stream; // by returning stream gulp can listen to events from the stream and knows when it is finished.
+});
 
 gulp.task('buildAll', ['build', 'buildTests', 'less']);
 gulp.task('default', ['browser-sync']);

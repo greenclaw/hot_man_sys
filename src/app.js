@@ -1,3 +1,4 @@
+/// <reference path="../typings/index.d.ts" />
 "use strict";
 var express = require('express');
 var logger = require('morgan');
@@ -6,25 +7,24 @@ var path_1 = require('path');
 var index_1 = require('./routes/index');
 var users_1 = require('./routes/users');
 var cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
+var favicon = require('serve-favicon');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
-// TODO: Set up DB connection in Docker
-var pgp = require('pg-promise')();
-/*
+var promise = require('bluebird');
+var pgpOptions = { promiseLib: promise };
+var pgp = require('pg-promise')(pgpOptions);
 var db = pgp({
-  host: 'localhost',
-  port: 5433,
-  database: 'my-database-name',
-  user: 'user-name',
-  password: 'user-password'
+    host: 'localhost',
+    port: 5433,
+    database: 'hot_man_sys',
+    user: 'postgres',
+    password: ''
 });
-*/
 var app = express();
 // view engine setup
 app.set('views', path_1.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -63,6 +63,37 @@ app.use(function (error, req, res, next) {
         error: {}
     });
     return null;
+});
+/*
+passport.use(new Strategy(
+  function(username, password, cb) {
+    db.users.findByUsername(username, function(err, user) {
+      if (err) { return cb(err); }
+      if (!user) { return cb(null, false); }
+      if (user.password != password) { return cb(null, false); }
+      return cb(null, user);
+    });
+  }));
+*/
+var hotel = {
+    countryname: "Australia"
+};
+var hotelCols = {};
+db.query("SELECT * FROM ${table^}", { table: hotel, cols: hotelCols })
+    .then(function (data) {
+    // console.log("DATA:", data); // print data;
+    index_1.default.get('/hotels', function (req, res, next) {
+        res.render('index', {
+            hotels: data,
+            title: "Hotels"
+        });
+    });
+})
+    .catch(function (error) {
+    console.log("ERROR:", error); // print the error;
+})
+    .finally(function () {
+    pgp.end(); // for immediate app exit, closing the connection pool.
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = app;

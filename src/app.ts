@@ -1,3 +1,5 @@
+/// <reference path="../typings/index.d.ts" />
+
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
@@ -6,20 +8,22 @@ import index from './routes/index';
 import users from './routes/users';
 import cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
 
-var passport = require('passport');
-var Strategy = require('passport-local').Strategy;
+import * as favicon from 'serve-favicon'
 
-// TODO: Set up DB connection in Docker
-var pgp = require('pg-promise')();
-/*
-var db = pgp({
+const passport = require('passport')
+const Strategy = require('passport-local').Strategy
+
+import * as promise from 'bluebird'
+
+const pgpOptions = { promiseLib: promise }
+const pgp = require('pg-promise')(pgpOptions);
+const db = pgp({
   host: 'localhost',
   port: 5433,
-  database: 'my-database-name',
-  user: 'user-name',
-  password: 'user-password'
+  database: 'hot_man_sys',
+  user: 'postgres',
+  password: ''
 });
-*/
 
 const app: express.Express = express();
 
@@ -27,8 +31,7 @@ const app: express.Express = express();
 app.set('views', join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -88,5 +91,30 @@ passport.use(new Strategy(
     });
   }));
 */
+
+const hotel = {
+  countryname: `Australia`
+}
+
+const hotelCols = {
+
+}
+
+db.query("SELECT * FROM ${table^}", { table: hotel, cols: hotelCols})
+    .then(function (data) {
+        // console.log("DATA:", data); // print data;
+        index.get('/hotels', function(req, res, next) {
+          res.render('index', { 
+            hotels: data,
+            title: `Hotels`
+          })
+        })
+    })
+    .catch(function (error) {
+        console.log("ERROR:", error); // print the error;
+    })
+    .finally(function () {
+        pgp.end(); // for immediate app exit, closing the connection pool.
+    });
 
 export default app;
