@@ -3,11 +3,10 @@
 var express_1 = require('express');
 var index = express_1.Router();
 var passport = require('passport');
-var db = require('../db');
+var model = require('../model');
 /* GET home page. */
 index.get('/', function (req, res, next) {
     res.render('index', {
-        title: 'Hotel Management System',
         guest: req.user
     });
 });
@@ -17,9 +16,7 @@ index.get('/quickstart', function (req, res, next) {
 });
 index.get('/login', function (req, res, next) {
     res.render('login', {
-        title: 'Hotel Management System',
-        guest: req.user,
-        error: req.flash('error')
+        guest: req.user
     });
 });
 index.post("/login", passport.authenticate("local", {
@@ -27,23 +24,17 @@ index.post("/login", passport.authenticate("local", {
     failureRedirect: "/login"
 }), function (req, res, next) {
     req.session.save(function (err) {
-        if (err) {
+        if (err)
             return next(err);
-        }
-        else {
-            res.redirect("/");
-        }
+        res.redirect("/");
     });
 });
 index.get("/logout", function (req, res, next) {
     req.logout();
     req.session.save(function (err) {
-        if (err) {
+        if (err)
             return next(err);
-        }
-        else {
-            res.redirect('/');
-        }
+        res.redirect('/');
     });
 });
 /*
@@ -54,26 +45,24 @@ index.get('/',
     res.render('index', { guest: req.user });
   });
   */
-index.get("/register", function (req, res, next) {
-    res.render("register", {});
+index.get("/signup", function (req, res, next) {
+    res.render("signup", {});
 });
-index.post("/register", function (req, res, next) {
-    db.guests.register(req.body, function (err, guest) {
+index.post('/signup', function (req, res, next) {
+    model.guests.create(req.body, function (err, guest) {
         if (err) {
-            return res.render('register', { error: err.message });
+            console.log(err);
+            return res.render('signup', { error: err.message });
         }
-        else {
-            passport.authenticate('local')(req, res, function () {
-                req.session.save(function (err) {
-                    if (err) {
-                        return next(err);
-                    }
-                    else {
-                        res.redirect('/');
-                    }
-                });
+        passport.authenticate('local')(req, res, function () {
+            console.log('REQUEST SESSION', req.session);
+            req.session.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.redirect('/');
             });
-        }
+        });
     });
 });
 index.get('/ping', function (req, res) {

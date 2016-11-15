@@ -27,7 +27,7 @@ CREATE TABLE if not exists managers (
 CREATE TABLE if not exists hotels (
 	id SERIAL,
 	hotel_name VARCHAR NOT NULL,
-	stars NUMERIC(2,1),
+	star_num NUMERIC(2,1),
 	price_id INTEGER,
 	city VARCHAR,
 	country_code VARCHAR(2) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE if not exists rooms_types(
 	id SERIAL,
 	class_name VARCHAR(20),
 	capacity NUMERIC(1,0),
-	bed_quantity NUMERIC(1,0),
+	bed_num NUMERIC(1,0),
 	CONSTRAINT pk_rooms_types PRIMARY KEY(id)
 );
 
@@ -69,11 +69,11 @@ CREATE TABLE if not exists rooms(
 
 CREATE TABLE if not exists guests (
 	id SERIAL,
-	sure_name character varying NOT NULL,
+	first_name character varying NOT NULL,
 	last_name character varying NOT NULL,
-	age numeric(3,0) NOT NULL,
+	age numeric(3,0),
 	phone character varying,
-	email character varying NOT NULL,
+	email character varying UNIQUE NOT NULL,
 	guest_password character varying NOT NULL,
 	CONSTRAINT pk_guests PRIMARY KEY(id)
 );

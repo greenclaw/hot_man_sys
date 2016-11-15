@@ -1,16 +1,11 @@
 extends layout
 
 block content
-    .register
+    .signup
         .container-fluid
             .row
                 .col-md-8.offset-md-2
-                    form(action='/signup' method='post').mt-3
-                        .row.form-group
-                            .col-sm-3.text-sm-right
-                                label(for="id").col-form-label ID
-                            .col-sm-6
-                                input(type='number' name='id' value=randomID)#id.form-control
+                    form(role='form' action='/signup' method='post').mt-3
                         .row.form-group
                             .col-sm-3.text-sm-right
                                 label(for="first_name").col-form-label First Name
@@ -28,9 +23,9 @@ block content
                                 input(type='text' name='email')#email.form-control
                         .row.form-group
                             .col-sm-3.text-sm-right
-                                label(for="password").col-form-label Passowrd
+                                label(for="guest_password").col-form-label Passowrd
                             .col-sm-6
-                                input(type='password' name='password')#password.form-control
+                                input(type='password' name='guest_password')#password.form-control
                         .row.form-group
                             .col-sm-6.offset-sm-3
                                 input(type='submit' value='Sign Up')#submit.btn.btn-primary.btn-block

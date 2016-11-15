@@ -18,15 +18,14 @@ var guests = {
             .then(function (guest) {
             if (guest) {
                 console.log("Email is correct");
-                callback(null, guest);
+                return callback(null, guest);
             }
-            else {
-                console.log("Email is not correct");
-                callback(new Error(), null);
-            }
+            console.log("Email is not correct");
+            callback(new Error("Email is not correct"));
         })
             .catch(function (error) {
             console.log("ERROR:", error); // print the error;
+            callback(error);
         })
             .finally(function () {
             pgPromise.end(); // for immediate app exit, closing the connection pool.
@@ -39,13 +38,11 @@ var guests = {
                 console.log("There is a guest " + id);
                 return callback(null, guest);
             }
-            else {
-                return callback(new Error("Guest " + id + " does not exist"), null);
-            }
+            callback(new Error("Guest " + id + " does not exist"));
         })
             .catch(function (error) {
             console.log("ERROR:", error); // print the error;
-            callback(error, null);
+            callback(error);
         })
             .finally(function () {
             pgPromise.end(); // for immediate app exit, closing the connection pool.
@@ -57,29 +54,28 @@ var guests = {
             .then(function (guest) {
             if (guest) {
                 console.log("There is a guest with " + attribute + " " + value);
-                callback(null, guest);
+                return callback(null, guest);
             }
-            else {
-                console.log("There is NO guest with " + attribute + " " + value);
-                callback(new Error("There is NO guest with " + attribute + " " + value));
-            }
+            console.log("There is NO guest with " + attribute + " " + value);
+            callback(new Error("There is NO guest with " + attribute + " " + value));
         })
             .catch(function (error) {
             console.log("ERROR: ", error);
+            callback(error);
         })
             .finally(function () {
             pgPromise.end();
         });
     },
     create: function (guest, callback) {
-        console.log(pgPromise.as.format("INSERT INTO guests (\n                $<this~>\n            ) VALUES (\n                $<id>,\n                $<first_name>,\n                $<last_name>,\n                $<email>,\n                $<password> \n            );", guest));
-        pg.none("INSERT INTO guests (\n                $<this~>\n            ) VALUES (\n                $<id>,\n                $<first_name>,\n                $<last_name>,\n                $<email>,\n                $<password> \n            );", guest)
+        console.log(pgPromise.as.format("INSERT INTO guests (\n                $<this~>\n            ) VALUES (\n                $<first_name>,\n                $<last_name>,\n                $<email>,\n                $<guest_password> \n            );", guest));
+        pg.none("INSERT INTO guests (\n                $<this~>\n            ) VALUES (\n                $<first_name>,\n                $<last_name>,\n                $<email>,\n                $<guest_password> \n            );", guest)
             .then(function () {
             callback(null, guest);
         })
             .catch(function (error) {
             console.log("ERROR:", error); // print the error;
-            callback(error, null);
+            callback(error);
         })
             .finally(function () {
             pgPromise.end(); // for immediate app exit, closing the connection pool.

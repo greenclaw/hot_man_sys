@@ -25,7 +25,7 @@ interface Guest extends Table {
     age?: number,
     phone?: string,
     email: string,
-    password: string
+    guest_password: string
 }
 
 const guests = {
@@ -34,14 +34,14 @@ const guests = {
             .then((guest: Guest) => {
                 if (guest) {
                     console.log(`Email is correct`)
-                    callback(null, guest)
-                } else {
-                    console.log(`Email is not correct`)
-                    callback(new Error(), null)
+                    return callback(null, guest)
                 }
+                console.log(`Email is not correct`)
+                callback(new Error(`Email is not correct`))
             })
             .catch((error) => {
                 console.log("ERROR:", error); // print the error;
+                callback(error)
             })
             .finally(() => {
                 pgPromise.end(); // for immediate app exit, closing the connection pool.
@@ -54,13 +54,12 @@ const guests = {
                 if (guest) {
                     console.log(`There is a guest ${id}`)
                     return callback(null, guest)
-                } else {
-                    return callback(new Error(`Guest ${id} does not exist`), null)
                 }
+                callback(new Error(`Guest ${id} does not exist`))
             })
             .catch((error) => {
                 console.log("ERROR:", error); // print the error;
-                callback(error, null)
+                callback(error)
             })
             .finally(() => {
                 pgPromise.end(); // for immediate app exit, closing the connection pool.
@@ -69,20 +68,21 @@ const guests = {
 
     getOne: (attribute: string, value: string | number, callback) => {
 
-        console.log(pgPromise.as.format(`SELECT * FROM guests WHERE $<attribute> = $<value>`, { attribute, value }))
+        console.log(pgPromise.as.format(`SELECT * FROM guests WHERE $<attribute> = $<value>`, 
+            { attribute, value }))
 
         pg.oneOrNone(`SELECT * FROM guests WHERE $<attribute> = $<value>`, { attribute, value })
             .then((guest: Guest) => {
                 if (guest) {
                     console.log(`There is a guest with ${attribute} ${value}`)
-                    callback(null, guest)
-                } else {
-                    console.log(`There is NO guest with ${attribute} ${value}`)
-                    callback(new Error(`There is NO guest with ${attribute} ${value}`))
+                    return callback(null, guest)
                 }
+                console.log(`There is NO guest with ${attribute} ${value}`)
+                callback(new Error(`There is NO guest with ${attribute} ${value}`))
             })
             .catch((error) => {
                 console.log(`ERROR: `, error)
+                callback(error)
             })
             .finally(() => {
                 pgPromise.end()
@@ -94,28 +94,26 @@ const guests = {
         console.log(pgPromise.as.format(`INSERT INTO guests (
                 $<this~>
             ) VALUES (
-                $<id>,
                 $<first_name>,
                 $<last_name>,
                 $<email>,
-                $<password> 
+                $<guest_password> 
             );`, guest))
 
         pg.none(`INSERT INTO guests (
                 $<this~>
             ) VALUES (
-                $<id>,
                 $<first_name>,
                 $<last_name>,
                 $<email>,
-                $<password> 
+                $<guest_password> 
             );`, guest)
             .then(() => {
                 callback(null, guest)
             })
             .catch((error) => {
                 console.log("ERROR:", error); // print the error;
-                callback(error, null)
+                callback(error)
             })
             .finally(() => {
                 pgPromise.end(); // for immediate app exit, closing the connection pool.
@@ -123,7 +121,7 @@ const guests = {
     }
 }
 
-export { Guest, guests }
+export { Table, Guest, guests }
 
 /*
 

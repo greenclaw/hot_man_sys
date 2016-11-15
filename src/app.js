@@ -13,7 +13,7 @@ var connectFlash = require('connect-flash');
 var passport = require('passport');
 var passportLocal = require('passport-local');
 var Strategy = passportLocal.Strategy;
-var db = require('./db');
+var model = require('./model');
 var app = express();
 // view engine setup
 app.set('views', path_1.join(__dirname, 'views'));
@@ -46,6 +46,7 @@ app.use(function (req, res, next) {
     next(err);
 });
 // error handlers
+app.set('env', 'development');
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -73,29 +74,27 @@ passport.use(new Strategy({
     session: true,
     passReqToCallback: true
 }, function (req, email, password, callback) {
-    db.guests.findByEmail(email, function (err, guest) {
+    model.guests.getByEmail(email, function (err, guest) {
         if (err) {
             return callback(err);
         }
-        else if (!guest) {
+        if (!guest) {
             console.log("Incorrect username");
             return callback(null, false, { message: 'Incorrect username' });
         }
-        else if (guest.password != password) {
+        if (guest.guest_password != password) {
             console.log("Incorrect password");
             return callback(null, false, { message: 'Incorrect password' });
         }
-        else {
-            console.log("Correct username & password");
-            return callback(null, guest, { message: "Correct username & password" });
-        }
+        console.log("Correct username & password");
+        return callback(null, guest, { message: "Correct username & password" });
     });
 }));
 passport.serializeUser(function (guest, callback) {
     callback(null, guest.id);
 });
 passport.deserializeUser(function (id, callback) {
-    db.guests.findById(id, function (err, guest) {
+    model.guests.getById(id, function (err, guest) {
         if (err) {
             return callback(err);
         }

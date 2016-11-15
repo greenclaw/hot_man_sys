@@ -19,7 +19,7 @@ import passport = require('passport')
 const passportLocal = require('passport-local')
 const Strategy = passportLocal.Strategy
 
-import * as db from './db'
+import * as model from './model'
 
 const app: express.Express = express();
 
@@ -55,7 +55,6 @@ app.use('/management', management)
 app.use('/administration', administration);
 
 
-
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   var err = new Error('Not Found');
@@ -65,10 +64,11 @@ app.use((req, res, next) => {
 
 // error handlers
 
+app.set('env', 'development')
+
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-
   app.use((error: any, req, res, next) => {
     res.status(error['status'] || 500);
     res.render('error', {
@@ -97,28 +97,29 @@ passport.use(new Strategy({
     passReqToCallback : true
   },
   (req, email: string, password: string, callback) => {
-    db.guests.findByEmail(email, (err, guest: db.Guest) => {
+    model.guests.getByEmail(email, (err, guest: model.Guest) => {
       if (err) { 
         return callback(err); 
-      } else if (!guest) {
+      } 
+      if (!guest) {
         console.log(`Incorrect username`)
         return callback(null, false, { message: 'Incorrect username' }); 
-      } else if (guest.password != password) {
+      } 
+      if (guest.guest_password != password) {
         console.log(`Incorrect password`)
         return callback(null, false, { message: 'Incorrect password' }); 
-      } else {
-        console.log(`Correct username & password`)
-        return callback(null, guest, { message: `Correct username & password` });
-      }
+      } 
+      console.log(`Correct username & password`)
+      return callback(null, guest, { message: `Correct username & password` });
     });
   }));
 
-passport.serializeUser(function(guest: db.Guest, callback) {
+passport.serializeUser((guest: model.Guest, callback) => {
   callback(null, guest.id);
 });
 
-passport.deserializeUser(function(id, callback) {
-  db.guests.findById(id, function (err, guest: db.Guest) {
+passport.deserializeUser((id, callback) => {
+  model.guests.getById(id, (err, guest: model.Guest) => {
     if (err) { return callback(err); }
     callback(null, guest);
   });

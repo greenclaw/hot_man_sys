@@ -12,8 +12,15 @@ html
       link(rel='stylesheet', href='/tether/css/tether.min.css')
       link(rel='stylesheet', href='/styles/style.css')
   body
-    block content
-    script(src='/jquery/jquery.min.js')
-    script(src='/tether/js/tether.min.js')
-    script(src='/bootstrap/js/bootstrap.min.js')
-    script(src='/vue/vue.js')
+    .layout
+      if error
+        div(role='alert').alert.alert-danger.alert-dismissible
+          button(type="button" data-dismiss="alert" aria-label="Close").close
+            span(aria-hidden="true") &times;
+          h1.alert-heading Error
+          p #{error}
+      block content
+      script(src='/jquery/jquery.min.js')
+      script(src='/tether/js/tether.min.js')
+      script(src='/bootstrap/js/bootstrap.min.js')
+      script(src='/vue/vue.js')
