@@ -26,12 +26,12 @@ CREATE TABLE if not exists manager
 
 CREATE TABLE if not exists hotel (
 	id INTEGER PRIMARY KEY,
-	hotelName VARCHAR NOT NULL,
+	name VARCHAR NOT NULL,
 	stars NUMERIC(2,1),
 	price INTEGER,
-	cityName VARCHAR,
-	countryCode VARCHAR(2) NOT NULL,
-	countryName VARCHAR NOT NULL,
+	city VARCHAR,
+	country_code VARCHAR(2) NOT NULL,
+	country VARCHAR NOT NULL,
 	address VARCHAR,
 	url VARCHAR,
 	rating NUMERIC(3,1) CHECK(rating between 0 and 10)
@@ -39,9 +39,9 @@ CREATE TABLE if not exists hotel (
 
 CREATE TABLE if not exists receptionist
 (
-  shift NUMERIC(1,0),
-  hotel_id INTEGER,
-  CONSTRAINT pk_receptionist PRIMARY KEY (id)
+	  shift NUMERIC(1,0),
+	  hotel_id INTEGER,
+	  CONSTRAINT pk_receptionist PRIMARY KEY (id)
 ) INHERITS (employee);
 
 CREATE TABLE if not exists room_type(
@@ -59,7 +59,7 @@ CREATE TABLE price(
 );
 
 CREATE TABLE if not exists room(
-	room_id SERIAL PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	num INTEGER NOT NULL CHECK(num > 0),
 	hotel_id INTEGER REFERENCES hotel,
 	type INTEGER REFERENCES room_type
@@ -71,27 +71,28 @@ CREATE TABLE if not exists guest(
 	lastname VARCHAR NOT NULL,
 	age NUMERIC(3) NOT NULL,
 	phone VARCHAR,
-	e_mail VARCHAR,
+	email VARCHAR NOT NULL,
 	password VARCHAR
 );
 
 CREATE TABLE if not exists reservation(
 	id SERIAL PRIMARY KEY,
-	guest_id INTEGER NOT NULL REFERENCES guest,
-	room_id INTEGER NOT NULL REFERENCES room ON DELETE RESTRICT,
-	reserve_date DATE NOT NULL,
+	guest_id INTEGER NOT NULL REFERENCES guest ON DELETE CASCADE,
+	room_id INTEGER NOT NULL REFERENCES room ON DELETE CASCADE,
+	reserve_time TIMESTAMP NOT NULL,
+	status varchar(20),
 	arrive DATE NOT NULL,
-	departure DATE NOT NULL CHECK (departure > arrive)
+	departure DATE NOT NULL CHECK (departure >= arrive)
 );
 
 CREATE TABLE if not exists log(
 	id SERIAL PRIMARY KEY,
-	guest_id INTEGER NOT NULL REFERENCES guest,
+	guest_id INTEGER NOT NULL REFERENCES guest ON DELETE RESTRICT,
 	room_id INTEGER NOT NULL REFERENCES room ON DELETE RESTRICT,
-	log_date DATE NOT NULL,
-	reserve_date DATE NOT NULL,
+	log_time TIMESTAMP NOT NULL,
+	reserve_time TIMESTAMP NOT NULL,
+	status varchar(20),
 	arrive DATE NOT NULL,
 	departure DATE NOT NULL
 );
-
 
