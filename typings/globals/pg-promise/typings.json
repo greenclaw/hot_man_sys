@@ -1,15 +1,8 @@
 {
   "resolution": "main",
   "tree": {
-    "src": "https://raw.githubusercontent.com/vitaly-t/pg-promise/master/typings.json",
-    "raw": "github:vitaly-t/pg-promise",
-    "files": [
-      "typescript/pg-promise.d.ts",
-      "typescript/ext-promise.d.ts",
-      "typescript/pg-minify.d.ts",
-      "typescript/pg-subset.d.ts"
-    ],
-    "global": true,
-    "name": "pg-promise"
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/e4ddeda801819f05f9faef22a81056622b2bf347/pg-promise/pg-promise.d.ts",
+    "raw": "registry:dt/pg-promise#0.0.0+20160417141255",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/e4ddeda801819f05f9faef22a81056622b2bf347/pg-promise/pg-promise.d.ts"
   }
 }

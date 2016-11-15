@@ -9,7 +9,7 @@ block content
         hr
 
         if guest
-          h2 You are logged in. <a href="/logout" title="Log Out">Log Out</a>
+          h2 You are logged in
           hr
           h3 Profile
           dl.row
@@ -17,7 +17,7 @@ block content
               dt.col-sm-4.capitalize= index.replace(`_`, ` `)
               dd.col-sm-8= val
         else
-          h2 You are not logged in. <a href="/login" title="Log In">Log In</a> or <a href="/signup" title="Sign Up">Sign Up</a>
+          h2 You are not logged in. <a href="/login" title="Log In">Log In</a>
 
         if hotels
           table.table.table-striped
