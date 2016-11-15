@@ -1,0 +1,36 @@
+extends layout
+
+block content
+    .register
+        .container-fluid
+            .row
+                .col-md-8.offset-md-2
+                    form(action='/signup' method='post').mt-3
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="id").col-form-label ID
+                            .col-sm-6
+                                input(type='number' name='id' value=randomID)#id.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="first_name").col-form-label First Name
+                            .col-sm-6
+                                input(type='text' name='first_name')#first_name.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="last_name").col-form-label Last Name
+                            .col-sm-6
+                                input(type='text' name='last_name')#last_name.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="email").col-form-label Email
+                            .col-sm-6
+                                input(type='text' name='email')#email.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="password").col-form-label Passowrd
+                            .col-sm-6
+                                input(type='password' name='password')#password.form-control
+                        .row.form-group
+                            .col-sm-6.offset-sm-3
+                                input(type='submit' value='Sign Up')#submit.btn.btn-primary.btn-block
