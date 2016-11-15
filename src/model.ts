@@ -15,8 +15,11 @@ const pg = pgPromise({
 
 const qrm = pgPromise.queryResult
 
-interface Guest {
-    id: number,
+interface Table {
+    id: number
+}
+
+interface Guest extends Table {
     first_name: string,
     last_name: string,
     age?: number,
@@ -26,15 +29,15 @@ interface Guest {
 }
 
 const guests = {
-    findByEmail: (email: string, callback) => {
+    getByEmail: (email: string, callback) => {
         pg.oneOrNone(`SELECT * FROM guests WHERE email = '${email}'`, email)
             .then((guest: Guest) => {
                 if (guest) {
                     console.log(`Email is correct`)
-                    return callback(null, guest)
+                    callback(null, guest)
                 } else {
                     console.log(`Email is not correct`)
-                    return callback(null, null)
+                    callback(new Error(), null)
                 }
             })
             .catch((error) => {
@@ -45,33 +48,63 @@ const guests = {
             });
     },
 
-    findById: (id: number, callback) => {
+    getById: (id: number, callback) => {
         pg.oneOrNone(`SELECT * FROM guests WHERE id = '${id}'`, id)
             .then((guest: Guest) => {
                 if (guest) {
                     console.log(`There is a guest ${id}`)
                     return callback(null, guest)
                 } else {
-                    return callback(new Error(`Guest ${id} does not exist`))
+                    return callback(new Error(`Guest ${id} does not exist`), null)
                 }
             })
             .catch((error) => {
                 console.log("ERROR:", error); // print the error;
+                callback(error, null)
             })
             .finally(() => {
                 pgPromise.end(); // for immediate app exit, closing the connection pool.
             });
     },
 
-    signup: (guest: Guest, callback) => {
-        
-        console.log(guest)
-        
-        pg.none(
-            `INSERT INTO guests (
+    getOne: (attribute: string, value: string | number, callback) => {
+
+        console.log(pgPromise.as.format(`SELECT * FROM guests WHERE $<attribute> = $<value>`, { attribute, value }))
+
+        pg.oneOrNone(`SELECT * FROM guests WHERE $<attribute> = $<value>`, { attribute, value })
+            .then((guest: Guest) => {
+                if (guest) {
+                    console.log(`There is a guest with ${attribute} ${value}`)
+                    callback(null, guest)
+                } else {
+                    console.log(`There is NO guest with ${attribute} ${value}`)
+                    callback(new Error(`There is NO guest with ${attribute} ${value}`))
+                }
+            })
+            .catch((error) => {
+                console.log(`ERROR: `, error)
+            })
+            .finally(() => {
+                pgPromise.end()
+            })
+    },
+
+    create: (guest: Guest, callback) => {
+
+        console.log(pgPromise.as.format(`INSERT INTO guests (
                 $<this~>
             ) VALUES (
-                $<id>
+                $<id>,
+                $<first_name>,
+                $<last_name>,
+                $<email>,
+                $<password> 
+            );`, guest))
+
+        pg.none(`INSERT INTO guests (
+                $<this~>
+            ) VALUES (
+                $<id>,
                 $<first_name>,
                 $<last_name>,
                 $<email>,

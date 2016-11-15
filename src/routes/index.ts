@@ -6,12 +6,11 @@ const index = Router();
 
 import passport = require('passport')
 
-import * as db from '../db'
+import * as model from '../model'
 
 /* GET home page. */
 index.get('/', function(req, res, next) {
-  res.render('index', { 
-    title: 'Hotel Management System',
+  res.render('index', {
     guest: req.user
   });
 });
@@ -22,8 +21,7 @@ index.get('/quickstart', function(req, res, next) {
 });
 
 index.get('/login', function(req, res, next) {
-  res.render('login', { 
-    title: 'Hotel Management System',
+  res.render('login', {
     guest: req.user,
     error: req.flash('error')
   });
@@ -74,14 +72,17 @@ index.get(`/signup`, (req, res, next) => {
 })
 
 index.post(`/signup`, (req, res, next) => {
-  db.guests.signup(req.body as db.Guest, (err, guest) => {
 
-    console.log(req.body)
+  console.log(`SIGNUP POST`, req.body)
 
+  model.guests.create(req.body as model.Guest, (err, guest) => {
     if (err) {
       return res.render('signup', { error: err.message })
     } else {
-      passport.authenticate('local')(req, res, () => {
+      passport.authenticate('local', { 
+        successRedirect: `/`,
+        failureRedirect: `/signup`
+      })(req, res, () => {
         req.session.save((err) => {
           if (err) {
             return next(err)

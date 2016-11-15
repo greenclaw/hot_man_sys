@@ -13,7 +13,7 @@ var connectFlash = require('connect-flash');
 var passport = require('passport');
 var passportLocal = require('passport-local');
 var Strategy = passportLocal.Strategy;
-var db = require('./db');
+var model = require('./model');
 var app = express();
 // view engine setup
 app.set('views', path_1.join(__dirname, 'views'));
@@ -73,7 +73,7 @@ passport.use(new Strategy({
     session: true,
     passReqToCallback: true
 }, function (req, email, password, callback) {
-    db.guests.findByEmail(email, function (err, guest) {
+    model.guests.getOne('email', email, function (err, guest) {
         if (err) {
             return callback(err);
         }
@@ -95,11 +95,13 @@ passport.serializeUser(function (guest, callback) {
     callback(null, guest.id);
 });
 passport.deserializeUser(function (id, callback) {
-    db.guests.findById(id, function (err, guest) {
-        if (err) {
-            return callback(err);
+    model.guests.getById(id, function (error, guest) {
+        if (error) {
+            return callback(error, null);
         }
-        callback(null, guest);
+        else {
+            callback(null, guest);
+        }
     });
 });
 Object.defineProperty(exports, "__esModule", { value: true });

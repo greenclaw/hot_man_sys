@@ -19,7 +19,7 @@ import passport = require('passport')
 const passportLocal = require('passport-local')
 const Strategy = passportLocal.Strategy
 
-import * as db from './db'
+import * as model from './model'
 
 const app: express.Express = express();
 
@@ -53,7 +53,6 @@ app.use(`/vue`,       express.static(__dirname + '/../node_modules/vue/dist/'))
 app.use('/', index);
 app.use('/management', management)
 app.use('/administration', administration);
-
 
 
 // catch 404 and forward to error handler
@@ -97,7 +96,7 @@ passport.use(new Strategy({
     passReqToCallback : true
   },
   (req, email: string, password: string, callback) => {
-    db.guests.findByEmail(email, (err, guest: db.Guest) => {
+    model.guests.getOne('email', email, (err, guest: model.Guest) => {
       if (err) { 
         return callback(err); 
       } else if (!guest) {
@@ -113,14 +112,17 @@ passport.use(new Strategy({
     });
   }));
 
-passport.serializeUser(function(guest: db.Guest, callback) {
+passport.serializeUser(function(guest: model.Guest, callback) {
   callback(null, guest.id);
 });
 
 passport.deserializeUser(function(id, callback) {
-  db.guests.findById(id, function (err, guest: db.Guest) {
-    if (err) { return callback(err); }
-    callback(null, guest);
+  model.guests.getById(id, function (error, guest: model.Guest) {
+    if (error) { 
+      return callback(error, null); 
+    } else {
+      callback(null, guest);
+    }
   });
 });
 

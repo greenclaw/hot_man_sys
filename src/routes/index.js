@@ -3,11 +3,10 @@
 var express_1 = require('express');
 var index = express_1.Router();
 var passport = require('passport');
-var db = require('../db');
+var model = require('../model');
 /* GET home page. */
 index.get('/', function (req, res, next) {
     res.render('index', {
-        title: 'Hotel Management System',
         guest: req.user
     });
 });
@@ -17,7 +16,6 @@ index.get('/quickstart', function (req, res, next) {
 });
 index.get('/login', function (req, res, next) {
     res.render('login', {
-        title: 'Hotel Management System',
         guest: req.user,
         error: req.flash('error')
     });
@@ -58,13 +56,16 @@ index.get("/signup", function (req, res, next) {
     res.render("signup", {});
 });
 index.post("/signup", function (req, res, next) {
-    db.guests.signup(req.body, function (err, guest) {
-        console.log(req.body);
+    console.log("SIGNUP POST", req.body);
+    model.guests.create(req.body, function (err, guest) {
         if (err) {
             return res.render('signup', { error: err.message });
         }
         else {
-            passport.authenticate('local')(req, res, function () {
+            passport.authenticate('local', {
+                successRedirect: "/",
+                failureRedirect: "/signup"
+            })(req, res, function () {
                 req.session.save(function (err) {
                     if (err) {
                         return next(err);
