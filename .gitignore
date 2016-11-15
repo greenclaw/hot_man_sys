@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 node_modules
 =======
 # Logs
@@ -31,4 +31,3 @@ node_modules
 
 # Debug log from npm
 npm-debug.log
->>>>>>> develop
