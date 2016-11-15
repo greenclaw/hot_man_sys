@@ -5,7 +5,7 @@ block content
         .container-fluid
             .row
                 .col-md-8.offset-md-2
-                    form(action='/register' method='post').mt-3
+                    form(action='/signup' method='post').mt-3
                         .row.form-group
                             .col-sm-3.text-sm-right
                                 label(for="id").col-form-label ID
@@ -23,16 +23,6 @@ block content
                                 input(type='text' name='last_name')#last_name.form-control
                         .row.form-group
                             .col-sm-3.text-sm-right
-                                label(for="age").col-form-label Age
-                            .col-sm-6
-                                input(type='number' name='age')#age.form-control
-                        .row.form-group
-                            .col-sm-3.text-sm-right
-                                label(for="phone").col-form-label Phone
-                            .col-sm-6
-                                input(type='text' name='phone')#phone.form-control
-                        .row.form-group
-                            .col-sm-3.text-sm-right
                                 label(for="email").col-form-label Email
                             .col-sm-6
                                 input(type='text' name='email')#email.form-control
@@ -43,4 +33,4 @@ block content
                                 input(type='password' name='password')#password.form-control
                         .row.form-group
                             .col-sm-6.offset-sm-3
-                                input(type='submit' value='Register')#submit.btn.btn-primary.btn-block
+                                input(type='submit' value='Sign Up')#submit.btn.btn-primary.btn-block

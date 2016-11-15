@@ -54,13 +54,14 @@ index.get('/',
     res.render('index', { guest: req.user });
   });
   */
-index.get("/register", function (req, res, next) {
-    res.render("register", {});
+index.get("/signup", function (req, res, next) {
+    res.render("signup", {});
 });
-index.post("/register", function (req, res, next) {
-    db.guests.register(req.body, function (err, guest) {
+index.post("/signup", function (req, res, next) {
+    db.guests.signup(req.body, function (err, guest) {
+        console.log(req.body);
         if (err) {
-            return res.render('register', { error: err.message });
+            return res.render('signup', { error: err.message });
         }
         else {
             passport.authenticate('local')(req, res, function () {

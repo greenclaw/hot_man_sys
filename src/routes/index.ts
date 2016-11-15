@@ -69,14 +69,17 @@ index.get('/',
   });
   */
 
-index.get(`/register`, (req, res, next) => {
-  res.render(`register`, {})
+index.get(`/signup`, (req, res, next) => {
+  res.render(`signup`, {})
 })
 
-index.post(`/register`, (req, res, next) => {
-  db.guests.register(req.body as db.Guest, (err, guest) => {
+index.post(`/signup`, (req, res, next) => {
+  db.guests.signup(req.body as db.Guest, (err, guest) => {
+
+    console.log(req.body)
+
     if (err) {
-      return res.render('register', { error: err.message })
+      return res.render('signup', { error: err.message })
     } else {
       passport.authenticate('local')(req, res, () => {
         req.session.save((err) => {

@@ -1,94 +1,95 @@
-﻿drop table if exists receptionist;
-drop table if exists manager;
-drop table if exists employee;
-drop table if exists log;
-drop table if exists reservation;
-drop table if exists guest;
-drop table if exists room;
-drop table if exists price;
-drop table if exists room_type;
-drop table if exists hotel;
+﻿drop table IF EXISTS receptionists;
+drop table IF EXISTS managers;
+drop table IF EXISTS employees;
+drop table IF EXISTS logs;
+drop table IF EXISTS reservations;
+drop table IF EXISTS guests;
+drop table IF EXISTS rooms;
+drop table IF EXISTS prices;
+drop table IF EXISTS room_types;
+drop table IF EXISTS hotels;
 
-CREATE TABLE if not exists employee (
+CREATE TABLE IF NOT EXISTS employees (
   id SERIAL NOT NULL,
-  surname VARCHAR(50) NOT NULL,
-  firstname VARCHAR(50) NOT NULL,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
   salary MONEY NOT NULL DEFAULT 1000,
-  CONSTRAINT pk_employee PRIMARY KEY (id)
+  CONSTRAINT pk_employees PRIMARY KEY (id)
 );
 
-CREATE TABLE if not exists manager (
+CREATE TABLE IF NOT EXISTS managers (
   phone VARCHAR(12),
-  CONSTRAINT pk_manager PRIMARY KEY (id)
-) INHERITS (employee);
+  CONSTRAINT pk_managers PRIMARY KEY (id)
+) INHERITS (employees);
 
-CREATE TABLE if not exists hotel (
+CREATE TABLE IF NOT EXISTS hotels (
 	id INTEGER PRIMARY KEY,
-	hotelName VARCHAR NOT NULL,
-	stars NUMERIC(2,1),
+	name VARCHAR NOT NULL,
+	star_num NUMERIC(2,1),
 	price INTEGER,
-	cityName VARCHAR,
-	countryCode VARCHAR(2) NOT NULL,
-	countryName VARCHAR NOT NULL,
+	city VARCHAR,
+	country_code VARCHAR(2) NOT NULL,
+	country VARCHAR NOT NULL,
 	address VARCHAR,
 	url VARCHAR,
 	rating NUMERIC(3,1) CHECK(rating between 0 and 10)
 );
 
-CREATE TABLE if not exists receptionist (
-  shift NUMERIC(1,0),
-  hotel_id INTEGER,
-  CONSTRAINT pk_receptionist PRIMARY KEY (id)
-) INHERITS (employee);
+CREATE TABLE IF NOT EXISTS receptionists (
+	  shift NUMERIC(1,0),
+	  hotels_id INTEGER,
+	  CONSTRAINT pk_receptionists PRIMARY KEY (id)
+) INHERITS (employees);
 
-CREATE TABLE if not exists room_type (
+CREATE TABLE IF NOT EXISTS room_types (
 	id SERIAL PRIMARY KEY,
 	class VARCHAR(20),
 	capacity NUMERIC(1),
 	bed_quantity NUMERIC(1)
 );
 
-CREATE TABLE IF not exists price ( 
-	hotel_id INTEGER REFERENCES hotel ON DELETE CASCADE,
-	type_id INTEGER REFERENCES room_type,
+CREATE TABLE prices ( 
+	hotels_id INTEGER REFERENCES hotels ON DELETE CASCADE,
+	type_id INTEGER REFERENCES room_types,
 	coast MONEY,
-	PRIMARY KEY (hotel_id, type_id)
+	PRIMARY KEY (hotels_id, type_id)
 );
 
-CREATE TABLE if not exists room (
-	room_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS rooms (
+	id SERIAL PRIMARY KEY,
 	num INTEGER NOT NULL CHECK(num > 0),
-	hotel_id INTEGER REFERENCES hotel,
-	type INTEGER REFERENCES room_type
+	hotels_id INTEGER REFERENCES hotels,
+	type INTEGER REFERENCES room_types
 );
 
-CREATE TABLE if not exists guest (
+CREATE TABLE IF NOT EXISTS guests (
 	id SERIAL PRIMARY KEY,
 	first_name VARCHAR NOT NULL,
 	last_name VARCHAR NOT NULL,
-	age NUMERIC(3) NOT NULL,
+	age NUMERIC(3),
 	phone VARCHAR,
-	email VARCHAR,
-	password VARCHAR
+	email VARCHAR NOT NULL,
+	password VARCHAR NOT NULL
 );
 
-CREATE TABLE IF not exists reservation(
+CREATE TABLE IF NOT EXISTS reservations (
 	id SERIAL PRIMARY KEY,
-	guest_id INTEGER NOT NULL REFERENCES guest,
-	room_id INTEGER NOT NULL REFERENCES room ON DELETE RESTRICT,
-	reserve_date DATE NOT NULL,
+	guests_id INTEGER NOT NULL REFERENCES guests ON DELETE CASCADE,
+	rooms_id INTEGER NOT NULL REFERENCES rooms ON DELETE CASCADE,
+	reserve_time TIMESTAMP NOT NULL,
+	status varchar(20),
 	arrive DATE NOT NULL,
-	departure DATE NOT NULL CHECK (departure > arrive)
+	departure DATE NOT NULL CHECK (departure >= arrive)
 );
 
-CREATE TABLE IF not exists log(
+CREATE TABLE IF NOT EXISTS logs (
 	id SERIAL PRIMARY KEY,
-	guest_id INTEGER NOT NULL REFERENCES guest,
-	room_id INTEGER NOT NULL REFERENCES room ON DELETE RESTRICT,
-	log_date DATE NOT NULL,
-	reserve_date DATE NOT NULL,
+	guests_id INTEGER NOT NULL REFERENCES guests ON DELETE RESTRICT,
+	rooms_id INTEGER NOT NULL REFERENCES rooms ON DELETE RESTRICT,
+	logs_time TIMESTAMP NOT NULL,
+	reserve_time TIMESTAMP NOT NULL,
+	status varchar(20),
 	arrive DATE NOT NULL,
 	departure DATE NOT NULL
 );
-
 

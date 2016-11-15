@@ -1,9 +1,10 @@
 /// <reference path="../typings/index.d.ts" />
 
-import * as promise from 'bluebird'
+import * as bluebirdPromise from 'bluebird'
 
-const pgPromiseOptions = { promiseLib: promise }
-const pgPromise = require('pg-promise')(pgPromiseOptions);
+const pgPromiseOptions = { promiseLib: bluebirdPromise }
+import * as postgresPromise from 'pg-promise';
+const pgPromise = postgresPromise(pgPromiseOptions);
 const pg = pgPromise({
     host: 'localhost',
     port: 5433,
@@ -18,15 +19,15 @@ interface Guest {
     id: number,
     first_name: string,
     last_name: string,
-    age: number,
-    phone: string,
+    age?: number,
+    phone?: string,
     email: string,
     password: string
 }
 
 const guests = {
     findByEmail: (email: string, callback) => {
-        pg.query(`SELECT * FROM guest WHERE email = '${email}'`, email, qrm.one | qrm.none)
+        pg.oneOrNone(`SELECT * FROM guests WHERE email = '${email}'`, email)
             .then((guest: Guest) => {
                 if (guest) {
                     console.log(`Email is correct`)
@@ -45,7 +46,7 @@ const guests = {
     },
 
     findById: (id: number, callback) => {
-        pg.query(`SELECT * FROM guest WHERE id = '${id}'`, id, qrm.one | qrm.none)
+        pg.oneOrNone(`SELECT * FROM guests WHERE id = '${id}'`, id)
             .then((guest: Guest) => {
                 if (guest) {
                     console.log(`There is a guest ${id}`)
@@ -62,21 +63,26 @@ const guests = {
             });
     },
 
-    register: (guest: Guest, callback) => {
-        pg.query(`INSERT INTO guest ($<this~>) VALUES (
-            $<id>,
-            $<first_name>,
-            $<last_name>,
-            $<age>,
-            $<phone>,
-            $<email>,
-            $<password> )`, guest, qrm.none)
+    signup: (guest: Guest, callback) => {
+        
+        console.log(guest)
+        
+        pg.none(
+            `INSERT INTO guests (
+                $<this~>
+            ) VALUES (
+                $<id>
+                $<first_name>,
+                $<last_name>,
+                $<email>,
+                $<password> 
+            );`, guest)
             .then(() => {
-                console.log("GUEST:", guest)
                 callback(null, guest)
             })
             .catch((error) => {
                 console.log("ERROR:", error); // print the error;
+                callback(error, null)
             })
             .finally(() => {
                 pgPromise.end(); // for immediate app exit, closing the connection pool.
