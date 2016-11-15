@@ -1,6 +1,12 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    	// Configure glob patterns for excluding files and folders.
+
+// Редактор
+
+    // Определяет семейство шрифтов.
+    "editor.fontFamily": "PragmataPro, 'PragmataPro Mono', Consolas, 'Courier New', monospace",
+
+    // Configure glob patterns for excluding files and folders.
     "files.exclude": {
         "**/.git": true,
         "**/.DS_Store": true,

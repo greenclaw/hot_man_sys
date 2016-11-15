@@ -2,9 +2,11 @@
   "name": "hot_man_sys",
   "globalDependencies": {
     "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
+    "connect-flash": "registry:dt/connect-flash#0.0.0+20160317120654",
     "cookie-parser": "github:DefinitelyTyped/DefinitelyTyped/cookie-parser/cookie-parser.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
     "debug": "github:DefinitelyTyped/DefinitelyTyped/debug/debug.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
     "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
+    "express-session": "registry:dt/express-session#0.0.0+20160930124524",
     "gulp": "github:DefinitelyTyped/DefinitelyTyped/gulp/gulp.d.ts#3d2916191781fe400176a030c03722ac4b87f1c1",
     "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#983126e131a2b81739053d60e4bbdbb46d6577b7",
     "morgan": "github:DefinitelyTyped/DefinitelyTyped/morgan/morgan.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",

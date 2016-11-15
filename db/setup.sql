@@ -62,13 +62,13 @@ CREATE TABLE if not exists room (
 	type INTEGER REFERENCES room_type
 );
 
-CREATE TABLE if not exists guest(
+CREATE TABLE if not exists guest (
 	id SERIAL PRIMARY KEY,
-	surname VARCHAR NOT NULL,
-	lastname VARCHAR NOT NULL,
+	first_name VARCHAR NOT NULL,
+	last_name VARCHAR NOT NULL,
 	age NUMERIC(3) NOT NULL,
 	phone VARCHAR,
-	e_mail VARCHAR,
+	email VARCHAR,
 	password VARCHAR
 );
 

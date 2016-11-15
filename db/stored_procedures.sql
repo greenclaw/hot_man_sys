@@ -1,8 +1,8 @@
-﻿create or replace function add_guest(surname VARCHAR, lastname VARCHAR, age NUMERIC(3), phone VARCHAR, e_mail VARCHAR)
+﻿create or replace function add_guest(first_name VARCHAR, last_name VARCHAR, age NUMERIC(3), phone VARCHAR, email VARCHAR)
 returns void as $$
 BEGIN
-	insert into guest (surname,lastname, age, phone, e_mail) 
-	values(surname,lastname, age, phone, e_mail);
+	insert into guest (first_name, last_name, age, phone, email) 
+	values(first_name, last_name, age, phone, email);
 END;
 $$ LANGUAGE plpgsql;
 

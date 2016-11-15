@@ -5,21 +5,15 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var path_1 = require('path');
 var index_1 = require('./routes/index');
-var users_1 = require('./routes/users');
+var management_1 = require('./routes/management');
+var administration_1 = require('./routes/administration');
 var cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
 var favicon = require('serve-favicon');
+var connectFlash = require('connect-flash');
 var passport = require('passport');
-var Strategy = require('passport-local').Strategy;
-var promise = require('bluebird');
-var pgpOptions = { promiseLib: promise };
-var pgp = require('pg-promise')(pgpOptions);
-var db = pgp({
-    host: 'localhost',
-    port: 5433,
-    database: 'hot_man_sys',
-    user: 'postgres',
-    password: ''
-});
+var passportLocal = require('passport-local');
+var Strategy = passportLocal.Strategy;
+var db = require('./db');
 var app = express();
 // view engine setup
 app.set('views', path_1.join(__dirname, 'views'));
@@ -27,15 +21,24 @@ app.set('view engine', 'pug');
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser('lorem ipsum'));
 app.use(express.static(path_1.join(__dirname, 'public')));
+app.use(require('express-session')({
+    secret: 'lorem ipsum',
+    resave: true,
+    saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(connectFlash());
+app.use(passport.session());
 app.use("/jquery", express.static(__dirname + '/../node_modules/jquery/dist/'));
 app.use("/tether", express.static(__dirname + '/../node_modules/tether/dist/'));
 app.use("/bootstrap", express.static(__dirname + '/../node_modules/bootstrap/dist/'));
 app.use("/vue", express.static(__dirname + '/../node_modules/vue/dist/'));
 app.use('/', index_1.default);
-app.use('/users', users_1.default);
+app.use('/management', management_1.default);
+app.use('/administration', administration_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
@@ -64,36 +67,40 @@ app.use(function (error, req, res, next) {
     });
     return null;
 });
-/*
-passport.use(new Strategy(
-  function(username, password, cb) {
-    db.users.findByUsername(username, function(err, user) {
-      if (err) { return cb(err); }
-      if (!user) { return cb(null, false); }
-      if (user.password != password) { return cb(null, false); }
-      return cb(null, user);
+passport.use(new Strategy({
+    usernameField: 'email',
+    passwordField: 'password',
+    session: true,
+    passReqToCallback: true
+}, function (req, email, password, callback) {
+    db.guests.findByEmail(email, function (err, guest) {
+        if (err) {
+            return callback(err);
+        }
+        else if (!guest) {
+            console.log("Incorrect username");
+            return callback(null, false, { message: 'Incorrect username' });
+        }
+        else if (guest.password != password) {
+            console.log("Incorrect password");
+            return callback(null, false, { message: 'Incorrect password' });
+        }
+        else {
+            console.log("Correct username & password");
+            return callback(null, guest, { message: "Correct username & password" });
+        }
     });
-  }));
-*/
-var hotel = {
-    countryname: "Australia"
-};
-var hotelCols = {};
-db.query("SELECT * FROM ${table^}", { table: hotel, cols: hotelCols })
-    .then(function (data) {
-    // console.log("DATA:", data); // print data;
-    index_1.default.get('/hotels', function (req, res, next) {
-        res.render('index', {
-            hotels: data,
-            title: "Hotels"
-        });
+}));
+passport.serializeUser(function (guest, callback) {
+    callback(null, guest.id);
+});
+passport.deserializeUser(function (id, callback) {
+    db.guests.findById(id, function (err, guest) {
+        if (err) {
+            return callback(err);
+        }
+        callback(null, guest);
     });
-})
-    .catch(function (error) {
-    console.log("ERROR:", error); // print the error;
-})
-    .finally(function () {
-    pgp.end(); // for immediate app exit, closing the connection pool.
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = app;

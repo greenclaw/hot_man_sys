@@ -6,13 +6,27 @@ block content
       .col-sm-12
         h1 #{title}
 
-        table.table.table-striped
-          thead.thead-inverse
-            tr
-              each val, index in hotels[1]
-                th= index
-          tbody
-            each hotel in hotels
+        hr
+
+        if guest
+          h2 You are logged in
+          hr
+          h3 Profile
+          dl.row
+            each val, index in guest
+              dt.col-sm-4.capitalize= index.replace(`_`, ` `)
+              dd.col-sm-8= val
+        else
+          h2 You are not logged in. <a href="/login" title="Log In">Log In</a>
+
+        if hotels
+          table.table.table-striped
+            thead.thead-inverse
               tr
-                each val, index in hotel
-                  td= val
+                each val, index in hotels[1]
+                  th= index
+            tbody
+              each hotel in hotels
+                tr
+                  each val, index in hotel
+                    td(class=index)= val

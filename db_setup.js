@@ -6,6 +6,7 @@ shell.echo(`Start!`)
 
 const postgresPort = `5433`
 const postgresUser = `postgres`
+const postgresPassword = ``
 
 const prefix = `psql -p ${postgresPort} -U ${postgresUser}`
 
