@@ -53,16 +53,106 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-
-
-create or replace function to_archive(num integer, hotel_id integer, type integer)
+-- execute by scheduler on 12:00 AM to clean overdue reservations
+create or replace function to_archive_not_confirmed()
 returns void as $$
 BEGIN
-	insert into room (num, hotel_id, type) 
-	values (num, hotel_id, type);
+	insert into logs(guest_id,room_id,log_time,reserve_time,log_status,arrival_date,departure_date)
+	select (guest_id, room_id,CURRENT_TIMESTAMP,reserve_time,'Not confirmed',arrival_date,departure_date)
+	from reservations
+	Where reserve_status='Not confirmed';
+END;
+$$ LANGUAGE plpgsql;
+
+select to_archive_not_confirmed();
+
+-- salary of manager in particularly hotel must be greater than
+-- staff of this hotel
+create or replace function check_salary(m_salary manager, s_salary money) 
+returns boolean as $$
+BEGIN
+	
 END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION clear_reservations()
+  RETURNS boolean AS
+$BODY$
+BEGIN
+	delete from reservations as res
+	where res.arrive_date >= CURRENT_DATE;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION public.clear_reservations()
+  OWNER TO hot_man_sys;
+
+
+CREATE OR REPLACE FUNCTION event_to_log()
+RETURNS trigger AS
+$event_to_log$
+BEGIN
+	IF TG_NAME='reserve_new_room' THEN
+		insert into logs (guest_id,room_id,log_time,reserve_time,log_status,arrival_date,departure_date)
+		values( new.guest_id,
+			new.room_id,
+			CURRENT_TIMESTAMP,
+			new.reserve_time,
+			'Reserved',
+			new.arrival_date,
+			new.departure_date);
+	ELSE 	IF TG_NAME='unreserve_room' THEN
+			insert into logs (guest_id,room_id,log_time,reserve_time,log_status,arrival_date,departure_date)
+			values( old.guest_id,
+			old.room_id,
+			CURRENT_TIMESTAMP,
+			old.reserve_time,
+			'Released',
+			old.arrival_date,
+			old.departure_date);
+		ELSE 	IF TG_NAME='update_room_reservation' THEN
+			   IF ( OLD.reserve_status <> 'Paid' 
+				AND NEW.reserve_status = 'Paid') THEN
+				insert into logs (guest_id,room_id,log_time,reserve_time,log_status,arrival_date,departure_date)
+				values( old.guest_id,
+				old.room_id,
+				CURRENT_TIMESTAMP,
+				old.reserve_time,
+				'Paid',
+				old.arrival_date,
+				old.departure_date);
+			   ELSE
+				insert into logs (guest_id,room_id,log_time,reserve_time,log_status,arrival_date,departure_date)
+				values( old.guest_id,
+				old.room_id,
+				CURRENT_TIMESTAMP,
+				old.reserve_time,
+				'Updated',
+				old.arrival_date,
+				old.departure_date);
+			   END IF;
+			END IF;
+		END IF;
+		
+	END IF;
+	return new;
+END;
+$event_to_log$ LANGUAGE plpgsql;
+
+CREATE TRIGGER reserve_new_room
+BEFORE INSERT ON reservations
+FOR EACH ROW
+EXECUTE PROCEDURE event_to_log();
+
+CREATE TRIGGER unreserve_room
+BEFORE INSERT ON reservations
+FOR EACH ROW
+EXECUTE PROCEDURE event_to_log();
+
+CREATE TRIGGER update_room_reservation
+BEFORE UPDATE ON reservations
+FOR EACH ROW
+EXECUTE PROCEDURE event_to_log();
 
