@@ -8,7 +8,5 @@
 /// <reference path="globals/mocha/index.d.ts" />
 /// <reference path="globals/morgan/index.d.ts" />
 /// <reference path="globals/node/index.d.ts" />
-/// <reference path="globals/pg-promise/index.d.ts" />
 /// <reference path="globals/serve-favicon/index.d.ts" />
 /// <reference path="modules/bluebird/index.d.ts" />
-/// <reference path="modules/passport/index.d.ts" />

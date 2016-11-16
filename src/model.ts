@@ -29,42 +29,6 @@ interface Guest extends Table {
 }
 
 const guests = {
-    getByEmail: (email: string, callback) => {
-        pg.oneOrNone(`SELECT * FROM guests WHERE email = '${email}'`, email)
-            .then((guest: Guest) => {
-                if (guest) {
-                    console.log(`Email is correct`)
-                    return callback(null, guest)
-                }
-                console.log(`Email is not correct`)
-                callback(new Error(`Email is not correct`))
-            })
-            .catch((error) => {
-                console.log("ERROR:", error); // print the error;
-                callback(error)
-            })
-            .finally(() => {
-                pgPromise.end(); // for immediate app exit, closing the connection pool.
-            });
-    },
-
-    getById: (id: number, callback) => {
-        pg.oneOrNone(`SELECT * FROM guests WHERE id = '${id}'`, id)
-            .then((guest: Guest) => {
-                if (guest) {
-                    console.log(`There is a guest ${id}`)
-                    return callback(null, guest)
-                }
-                callback(new Error(`Guest ${id} does not exist`))
-            })
-            .catch((error) => {
-                console.log("ERROR:", error); // print the error;
-                callback(error)
-            })
-            .finally(() => {
-                pgPromise.end(); // for immediate app exit, closing the connection pool.
-            });
-    },
 
     getOne: (attribute: string, value: string | number, callback) => {
 
@@ -124,6 +88,42 @@ const guests = {
 export { Table, Guest, guests }
 
 /*
+    getByEmail: (email: string, callback) => {
+        pg.oneOrNone(`SELECT * FROM guests WHERE email = '${email}'`, email)
+            .then((guest: Guest) => {
+                if (guest) {
+                    console.log(`Email is correct`)
+                    return callback(null, guest)
+                }
+                console.log(`Email is not correct`)
+                callback(new Error(`Email is not correct`))
+            })
+            .catch((error) => {
+                console.log("ERROR:", error); // print the error;
+                callback(error)
+            })
+            .finally(() => {
+                pgPromise.end(); // for immediate app exit, closing the connection pool.
+            });
+    },
+
+    getById: (id: number, callback) => {
+        pg.oneOrNone(`SELECT * FROM guests WHERE id = '${id}'`, id)
+            .then((guest: Guest) => {
+                if (guest) {
+                    console.log(`There is a guest ${id}`)
+                    return callback(null, guest)
+                }
+                callback(new Error(`Guest ${id} does not exist`))
+            })
+            .catch((error) => {
+                console.log("ERROR:", error); // print the error;
+                callback(error)
+            })
+            .finally(() => {
+                pgPromise.end(); // for immediate app exit, closing the connection pool.
+            });
+    },
 
 pg.query(`select table_name, column_name, data_type, character_maximum_length
 from INFORMATION_SCHEMA.COLUMNS 

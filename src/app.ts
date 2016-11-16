@@ -15,9 +15,9 @@ import * as favicon from 'serve-favicon'
 
 import connectFlash = require('connect-flash')
 
-import passport = require('passport')
+const passport = require('passport')
 const passportLocal = require('passport-local')
-const Strategy = passportLocal.Strategy
+const LocalStrategy = passportLocal.Strategy
 
 import * as model from './model'
 
@@ -89,39 +89,77 @@ app.use((error: any, req, res, next) => {
   return null;
 });
 
-
-passport.use(new Strategy({
+passport.use('signup', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'password',
+    passwordField: 'guest_password',
     session: true,
     passReqToCallback : true
   },
-  (req, email: string, password: string, callback) => {
-    model.guests.getByEmail(email, (err, guest: model.Guest) => {
-      if (err) { 
-        return callback(err); 
-      } 
-      if (!guest) {
-        console.log(`Incorrect username`)
-        return callback(null, false, { message: 'Incorrect username' }); 
-      } 
-      if (guest.guest_password != password) {
-        console.log(`Incorrect password`)
-        return callback(null, false, { message: 'Incorrect password' }); 
-      } 
-      console.log(`Correct username & password`)
-      return callback(null, guest, { message: `Correct username & password` });
-    });
-  }));
+  (req, email: string, password: string, done) => {
+    model.guests.getOne('email', email, (err, guest: model.Guest) => {
+      // in case of any error
+      if (err) {
+        console.log(`Guest signup error: ${err}`)
+        return done(err); 
+      }
+      // guest already exists
+      if (guest) {
+        console.log(`Guest ${email} already exists`)
+        return done(null, false, { message: `Guest ${email} already exists`})
+      }
+      // create a new guest
+      model.guests.create(req.body as model.Guest, (err, guest: model.Guest) => {
+        // in case of any error
+        if (err) {
+          console.log(`Guest creation error: ${err}`)
+          return done(err)
+        }
+        // new guest created
+        console.log(`New guest created: ${guest}`)
+        return done(null, guest, { message: `New guest created: ${guest}`})
+      })
+    })
+  }))
 
-passport.serializeUser((guest: model.Guest, callback) => {
-  callback(null, guest.id);
+passport.use('login', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'guest_password',
+    session: true,
+    passReqToCallback : true
+  },
+  (req, email: string, password: string, done) => {
+    model.guests.getOne('email', email, (err, guest: model.Guest) => {
+      // in case of any error
+      if (err) {
+        console.log(`Guest login error: ${err}`)
+        return done(err); 
+      }
+      // no guest found
+      if (!guest) {
+        console.log(`No guest with email ${email}`)
+        return done(null, false, { message: `No guest with email ${email}` }); 
+      }
+      // incorrect password
+      if (guest.guest_password != password) {
+        console.log(`Incorrect password for ${email}`)
+        return done(null, false, { message: `Incorrect password for ${email}` }); 
+      }
+      // correct password
+      console.log(`Successful login for ${email}`)
+      return done(null, guest, { message: `Successful login for ${email}` });
+    })
+  }))
+
+passport.serializeUser((guest: model.Guest, done) => {
+  return done(null, guest.id);
 });
 
-passport.deserializeUser((id, callback) => {
-  model.guests.getById(id, (err, guest: model.Guest) => {
-    if (err) { return callback(err); }
-    callback(null, guest);
+passport.deserializeUser((id, done) => {
+  model.guests.getOne('id', id, (err, guest: model.Guest) => {
+    if (err) { 
+      return done(err);
+    }
+    return done(null, guest);
   });
 });
 
