@@ -1,4 +1,4 @@
-DROP table if exists logs;
+﻿DROP table if exists logs;
 DROP table if exists reservations;
 DROP table if exists rooms;
 drop table if exists prices;
@@ -8,20 +8,27 @@ drop table if exists owners;
 drop table if exists managers;
 drop table if exists staff;
 drop table if exists hotels;
-drop table if exists accounts;
+drop table if exists guests;
 drop table if exists users;
-CREATE TABLE if not exists users (
+drop table if exists people;
+CREATE TABLE if not exists people (
 	id SERIAL,
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
+	date_of_birth DATE,
+	phone VARCHAR(12),
 	CONSTRAINT pk_users PRIMARY KEY (id)
 );
 
-CREATE TABLE if not exists accounts (
-	login_name VARCHAR(50) UNIQUE NOT NULL ,
+CREATE TABLE if not exists users (
+	username VARCHAR(50) UNIQUE NOT NULL ,
 	email VARCHAR(50) CONSTRAINT email_must_unique UNIQUE NOT NULL,
-	account_password VARCHAR(30) NOT NULL,
+	user_password VARCHAR(30) NOT NULL,
 	CONSTRAINT pk_accounts PRIMARY KEY (id)
+) INHERITS (people);
+
+CREATE TABLE if not exists guests (
+	payments VARCHAR,
 ) INHERITS (users);
 
 
@@ -43,13 +50,13 @@ CREATE TABLE if not exists staff(
 	hotel_id INTEGER REFERENCES hotels,
 	salary MONEY NOT NULL DEFAULT 1000,
 	CONSTRAINT pk_staff PRIMARY KEY(id)
-) INHERITS (users);
+) INHERITS (people);
 
 
 CREATE TABLE if not exists managers (
 	phone_number VARCHAR(12),
 	CONSTRAINT pk_managers PRIMARY KEY (id)
-) INHERITS (staff, accounts);
+) INHERITS (staff, users);
 
 CREATE TABLE if not exists owners (
 	CONSTRAINT pk_owners PRIMARY KEY(id)
@@ -81,29 +88,34 @@ CREATE TABLE if not exists rooms(
 	num INTEGER NOT NULL CHECK(num > 0),
 	hotel_id INTEGER REFERENCES hotels ON DELETE CASCADE,
 	room_type INTEGER REFERENCES rooms_types ON DELETE RESTRICT,
+	floor NUMERIC(3,0),
 	CONSTRAINT pk_rooms PRIMARY KEY(id)
 );
 
 CREATE TABLE if not exists reservations (
 	id SERIAL,
-	guest_id INTEGER NOT NULL REFERENCES accounts ON DELETE CASCADE,
+	guest_id INTEGER NOT NULL REFERENCES guests ON DELETE CASCADE,
 	room_id INTEGER NOT NULL REFERENCES rooms ON DELETE RESTRICT,
-	reserve_time TIMESTAMP NOT NULL,
-	reserve_status VARCHAR(20),
+	reservation_time TIMESTAMP NOT NULL,
+	reservation_status VARCHAR(20),
 	arrival_date DATE NOT NULL,
 	departure_date DATE NOT NULL,
 	CONSTRAINT pk_reservations PRIMARY KEY(id),
-	CHECK (departure_date >= arrival_date)
+	CONSTRAINT correct_dates CHECK (departure_date > arrival_date AND arrival_date > CURRENT_DATE)
 );
 
 CREATE TABLE if not exists logs (
 	id SERIAL,
-	guest_id INTEGER NOT NULL REFERENCES accounts ON DELETE NO ACTION,
+	guest_id INTEGER NOT NULL REFERENCES guests ON DELETE NO ACTION,
 	room_id INTEGER NOT NULL REFERENCES rooms ON DELETE NO ACTION,
 	log_time TIMESTAMP NOT NULL,
-	reserve_time TIMESTAMP NOT NULL,
+	reservation_time TIMESTAMP NOT NULL,
 	log_status varchar(20),
 	arrival_date DATE NOT NULL,
 	departure_date DATE NOT NULL,
 	CONSTRAINT pk_logs PRIMARY KEY(id)
 );
+
+
+
+
