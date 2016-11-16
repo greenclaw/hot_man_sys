@@ -147,7 +147,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE event_to_log();
 
 CREATE TRIGGER unreserve_room
-BEFORE INSERT ON reservations
+BEFORE DELETE ON reservations
 FOR EACH ROW
 EXECUTE PROCEDURE event_to_log();
 
