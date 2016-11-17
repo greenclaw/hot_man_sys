@@ -1,14 +1,13 @@
-# README
-## This the readme for your application "node-express-typescript" 
--------------------
-### Visual Studio Code has *awesome* Markdown support!
 
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
+# The Hotel management system
+-----------------------------
 
-### For more information
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](http://daringfireball.net)
+** Prerequesites**
+* node js 6.9.1
+* postgresql 9.5.5
 
-** Enjoy!**
+#How to install:
+* Go into main directory
+* Run `npm install`
+* Run `node model_setup.js`
+* Go to browser `http://localhost:3000`

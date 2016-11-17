@@ -1,11 +1,62 @@
-﻿--create or replace function add_customer(surname VARCHAR, lastname VARCHAR, age NUMERIC(3), user VARCHAR, e_mail VARCHAR)
---returns void as $$
---BEGIN
---	insert into guest (surname,lastname, age, phone, e_mail) 
---	values(surname,lastname, age, phone, e_mail);
---END;
---$$ LANGUAGE plpgsql;
+﻿﻿
+-- hotel id searching
+CREATE UNIQUE INDEX primary_hotel
+  ON public.hotels
+  USING btree
+  (id);
+ALTER TABLE public.hotels CLUSTER ON primary_hotel;
 
+-- city searching
+CREATE INDEX city_searching
+  ON public.hotels
+  USING hash
+  (city COLLATE pg_catalog."default");
+
+--country searching
+CREATE INDEX country_searching
+  ON public.hotels
+  USING hash
+  (country COLLATE pg_catalog."default");
+
+-- room id searching
+CREATE UNIQUE INDEX primary_room
+  ON public.rooms
+  USING btree
+  (id);
+ALTER TABLE public.rooms CLUSTER ON primary_room;
+
+CREATE INDEX hotel_index
+  ON public.rooms
+  USING btree
+  (hotel_id);
+
+--reservation searching
+
+CREATE UNIQUE INDEX primary_reserv
+  ON public.reservations
+  USING btree
+  (id);
+ALTER TABLE public.reservations CLUSTER ON primary_reserv;
+
+CREATE INDEX room_id_index
+  ON public.reservations
+  USING btree
+  (room_id);
+
+-- log searching
+CREATE UNIQUE INDEX primary_log
+   ON public.logs USING btree (id ASC);
+ALTER TABLE public.logs
+  CLUSTER ON primary_log;
+
+ CREATE INDEX log_searching
+   ON public.logs USING btree
+   (log_status ASC, log_time ASC );
+
+   
+
+
+-- calculating budget and executes by after delete trigger on reservations
 create or replace function update_budget()
 returns trigger as $update_budget$
 BEGIN
@@ -33,7 +84,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE update_budget();
 
 	  
-
+-- reserving procedure
 create or replace function reserve_room(room_id integer, guest_id integer, arrive varchar, dep varchar)
 returns boolean as $$
 DECLARE 
@@ -86,7 +137,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
+-- logging procedure executed by insert, update, delete triggers on reservations table
 CREATE OR REPLACE FUNCTION event_to_log()
 RETURNS trigger AS
 $event_to_log$
@@ -150,5 +201,11 @@ BEFORE UPDATE ON reservations
 FOR EACH ROW
 EXECUTE PROCEDURE event_to_log();
 
-
+--create or replace function add_customer(surname VARCHAR, lastname VARCHAR, age NUMERIC(3), user VARCHAR, e_mail VARCHAR)
+--returns void as $$
+--BEGIN
+--	insert into guest (surname,lastname, age, phone, e_mail) 
+--	values(surname,lastname, age, phone, e_mail);
+--END;
+--$$ LANGUAGE plpgsql;
 
