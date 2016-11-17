@@ -1,14 +1,120 @@
- .blocktext {
-  font-family: 'Pragmata Pro', 'Courier New', Courier, monospace;
-}
+@selection-bg: #b4d5fe;
 
 .capitalize {
   text-transform: capitalize;
 }
 
+#navbar-brand {
+  float: right;
+}
+
+.layout {
+  padding-top: 3.5rem;
+}
+
+.index .url {
+  word-break: break-all;
+}
+
+&::selection {  
+  background: @selection-bg;
+}
+
+&::-moz-selection {
+  background: @selection-bg;
+}
+
+.container a:hover, 
+.container a:focus {
+  text-decoration: none !important;
+  .link-underline(#fff, #0275d8, @selection-bg) !important;  
+}
+
 @media (max-width: 544px) {
   .login #submit,
-  .register #submit {
+  .signup #submit {
     margin-top: 3rem;
   }
 }
+
+// underline mixin
+
+.text-underline-crop(@background) {
+  text-shadow:  .03em 0 @background, 
+                -.03em 0 @background,
+                0 .03em @background,
+                0 -.03em @background,
+                .06em 0 @background,
+                -.06em 0 @background,
+                .09em 0 @background,
+                -.09em 0 @background,
+                .12em 0 @background,
+                -.12em 0 @background,
+                .15em 0 @background,
+                -.15em 0 @background;
+}
+
+.text-underline(@color-bg, @color-text) {
+  background-image: linear-gradient(@color-text, @color-text);
+  background-size: 1px 1px;
+  background-repeat: repeat-x;
+  background-position: 0% 95%;
+}
+
+.text-selection(@selection) {
+  &::selection {
+    .text-underline-crop(@selection);
+    
+    background: @selection;
+  }
+
+  &::-moz-selection {
+    .text-underline-crop(@selection);
+    
+    background: @selection;
+  }
+}
+
+.link-underline(@background, @text, @selection){
+  .text-underline-crop(@background);
+  .text-underline(@background, @text);
+  .text-selection(@selection);
+
+  color: @text;
+  text-decoration: none;
+
+  *,
+  *:after,
+  &:after,
+  *:before,
+  &:before {
+    text-shadow: none;
+  }
+
+  &:visited {
+    color: @text;
+  }
+}
+
+/*
+@color-text:        #333332;
+@color-background:  #fff;
+@color-selection:   #b4d5fe;
+
+body {
+  font-family: freight-text-pro, georgia, serif;
+  font-size: 18px;
+  line-height: 1.4;
+  margin: 20px;
+}
+
+pre {
+  background-color: #eee;
+  font-size: 16px;
+  padding: 20px;  
+}
+
+.post a {
+  .link-underline(@color-background, @color-text, @color-selection);
+}
+*/

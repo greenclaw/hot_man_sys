@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 -- hotel id searching
 CREATE UNIQUE INDEX primary_hotel
   ON public.hotels

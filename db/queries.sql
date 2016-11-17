@@ -1,4 +1,4 @@
-﻿-- returns hotels and their rooms not reserved at with moment
+﻿﻿-- returns hotels and their rooms not reserved at with moment
 
 select *
 from rooms, room_types, price, hotels

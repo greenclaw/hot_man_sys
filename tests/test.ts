@@ -1,5 +1,7 @@
+/// <reference path="../typings/index.d.ts" />
 
 import assert = require('assert');
+import * as model from '../src/model'
 
 describe('Array', function(){
   describe('#indexOf()', function(){

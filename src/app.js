@@ -5,18 +5,29 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var path_1 = require('path');
 var index_1 = require('./routes/index');
-var management_1 = require('./routes/management');
-var administration_1 = require('./routes/administration');
+var manage_1 = require('./routes/manage');
+var admin_1 = require('./routes/admin');
 var cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
 var favicon = require('serve-favicon');
 var connectFlash = require('connect-flash');
 var passport = require('passport');
 var passportLocal = require('passport-local');
-var Strategy = passportLocal.Strategy;
-var db = require('./db');
+var LocalStrategy = passportLocal.Strategy;
+// const expressVue =  require('express-vue')
+// models and schemas
+var model = require('./model');
 var app = express();
 // view engine setup
 app.set('views', path_1.join(__dirname, 'views'));
+/*
+app.set(`vue`, {
+  rootPath: __dirname + `/`,
+  layoutsDir: 'views/',
+  componentsDir: 'views/components',
+  defaultLayout: `layout`
+})
+app.engine(`vue`, expressVue)
+*/
 app.set('view engine', 'pug');
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
@@ -35,10 +46,12 @@ app.use(passport.session());
 app.use("/jquery", express.static(__dirname + '/../node_modules/jquery/dist/'));
 app.use("/tether", express.static(__dirname + '/../node_modules/tether/dist/'));
 app.use("/bootstrap", express.static(__dirname + '/../node_modules/bootstrap/dist/'));
+app.use("/moment", express.static(__dirname + '/../node_modules/moment/'));
 app.use("/vue", express.static(__dirname + '/../node_modules/vue/dist/'));
+app.use("/vue-material", express.static(__dirname + '/../node_modules/vue-material/dist/'));
 app.use('/', index_1.default);
-app.use('/management', management_1.default);
-app.use('/administration', administration_1.default);
+app.use('/manage', manage_1.default);
+app.use('/admin', admin_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
@@ -46,6 +59,7 @@ app.use(function (req, res, next) {
     next(err);
 });
 // error handlers
+app.set('env', 'development');
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -65,41 +79,77 @@ app.use(function (error, req, res, next) {
         message: error.message,
         error: {}
     });
-    return null;
+    null;
 });
-passport.use(new Strategy({
+passport.use('signup', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'password',
+    passwordField: 'user_password',
     session: true,
     passReqToCallback: true
-}, function (req, email, password, callback) {
-    db.guests.findByEmail(email, function (err, guest) {
+}, function (req, email, password, done) {
+    model.guests.selectOne('email', email, function (err, guest) {
+        // in case of any error
         if (err) {
-            return callback(err);
+            console.log("Guest signup error: " + err);
+            return done(err, false, req.flash("danger", "Guest signup error: " + err));
         }
-        else if (!guest) {
-            console.log("Incorrect username");
-            return callback(null, false, { message: 'Incorrect username' });
+        // guest already exists
+        if (guest) {
+            console.log("Guest " + email + " already exists");
+            return done(null, false, req.flash("warning", "Guest " + email + " already exists"));
         }
-        else if (guest.password != password) {
-            console.log("Incorrect password");
-            return callback(null, false, { message: 'Incorrect password' });
-        }
-        else {
-            console.log("Correct username & password");
-            return callback(null, guest, { message: "Correct username & password" });
-        }
+        // create a new guest
+        model.guests.insert(req.body, function (err, guest) {
+            // in case of any error
+            if (err) {
+                console.log("Guest creation error: " + err);
+                return done(err, false, req.flash("danger", "Guest creation error: " + err));
+            }
+            // new guest created
+            console.log("New guest created: ", guest);
+            done(null, guest, req.flash("success", "New guest created: " + guest));
+        });
     });
 }));
-passport.serializeUser(function (guest, callback) {
-    callback(null, guest.id);
-});
-passport.deserializeUser(function (id, callback) {
-    db.guests.findById(id, function (err, guest) {
+passport.use('login', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'user_password',
+    session: true,
+    passReqToCallback: true
+}, function (req, email, password, done) {
+    model.guests.selectOne('email', email, function (err, guest) {
+        // in case of any error
         if (err) {
-            return callback(err);
+            console.log("Guest login error: " + err);
+            return done(err, false, req.flash("danger", "Guest login error: " + err));
         }
-        callback(null, guest);
+        // no guest found
+        if (!guest) {
+            console.log("No guest with email " + email);
+            return done(null, false, req.flash("warning", "No guest with email " + email));
+        }
+        // incorrect password
+        if (guest.user_password != password) {
+            console.log("Incorrect password for " + email);
+            return done(null, false, req.flash("warning", "Incorrect password for " + email));
+        }
+        // correct password
+        console.log("Successful login for " + email);
+        done(null, guest, req.flash("success", "Successful login for " + email));
+    });
+}));
+passport.serializeUser(function (guest, done) {
+    console.log("Serializing guest " + guest.email);
+    done(null, guest.email);
+});
+passport.deserializeUser(function (email, done) {
+    model.guests.selectOne('email', email, function (err, guest) {
+        if (err) {
+            console.log("Serializing error: " + err);
+            return done(err);
+        }
+        console.log("Deserializing guest " + email);
+        done(null, guest);
     });
 });
 Object.defineProperty(exports, "__esModule", { value: true });

@@ -3,4 +3,4 @@ var express_1 = require('express');
 var administration = express_1.Router();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = administration;
-//# sourceMappingURL=administration.js.map
+//# sourceMappingURL=admin.js.map

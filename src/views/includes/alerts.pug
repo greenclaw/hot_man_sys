@@ -1,0 +1,29 @@
+if danger || warning || info || success
+	if danger.length > 0 || warning.length > 0 || info.length > 0 || success.length > 0
+		.container-fluid
+			.row
+				.col-xs-6.offset-xs-3.pt-1
+					if danger.length > 0
+						div(role='alert').alert.alert-danger.alert-dismissible.fade.in
+							button(type="button" data-dismiss="alert" aria-label="Close").close
+								span(aria-hidden="true") &times;
+							h4.alert-heading Danger
+							p.mb-0 #{danger}
+					if warning.length > 0
+						div(role='alert').alert.alert-warning.alert-dismissible.fade.in
+							button(type="button" data-dismiss="alert" aria-label="Close").close
+								span(aria-hidden="true") &times;
+							h4.alert-heading Warning
+							p.mb-0 #{warning}
+					if info.length > 0
+						div(role='alert').alert.alert-info.alert-dismissible.fade.in
+							button(type="button" data-dismiss="alert" aria-label="Close").close
+								span(aria-hidden="true") &times;
+							h4.alert-heading Info
+							p.mb-0 #{info}
+					if success.length > 0
+						div(role='alert').alert.alert-success.alert-dismissible.fade.in
+							button(type="button" data-dismiss="alert" aria-label="Close").close
+								span(aria-hidden="true") &times;
+							h4.alert-heading Success
+							p.mb-0 #{success}

@@ -1,4 +1,4 @@
-﻿DROP table if exists logs;
+﻿﻿DROP table if exists logs;
 DROP table if exists reservations;
 DROP table if exists rooms;
 drop table if exists prices;
