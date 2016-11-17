@@ -1,5 +1,4 @@
-﻿﻿-- returns hotels and their rooms not reserved at with moment
-
+﻿-- returns hotels and their rooms not reserved at with moment
 select *
 from rooms, room_types, price, hotels
 where rooms.hotel_id = hotels.id and
@@ -11,7 +10,7 @@ select distinct r.id
 from rooms as r, room_types as rt, hotels as h, reservations as rs
 where 
       r.hotel_id = h.id and
-      r.room_type = rt.id and
+      r.room_type=rt.id and
       r.id = rs.room_id and
       (daterange(date '2016-11-10',date '2016-11-30') * 
        daterange(rs.arrival_date,rs.departure_date)) <> 'empty')

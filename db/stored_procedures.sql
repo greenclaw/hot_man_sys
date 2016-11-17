@@ -18,7 +18,6 @@ CREATE INDEX country_searching
   USING hash
   (country COLLATE pg_catalog."default");
 
-
 -- room id searching
 CREATE UNIQUE INDEX primary_room
   ON public.rooms
