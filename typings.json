@@ -8,12 +8,14 @@
     "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
     "express-session": "registry:dt/express-session#0.0.0+20160930124524",
     "gulp": "github:DefinitelyTyped/DefinitelyTyped/gulp/gulp.d.ts#3d2916191781fe400176a030c03722ac4b87f1c1",
+    "jquery": "registry:dt/jquery#1.10.0+20160929162922",
     "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#983126e131a2b81739053d60e4bbdbb46d6577b7",
     "morgan": "github:DefinitelyTyped/DefinitelyTyped/morgan/morgan.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
     "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
     "passport-local": "registry:dt/passport-local#0.0.0+20160316155526",
     "pg-promise": "github:vitaly-t/pg-promise",
-    "serve-favicon": "registry:dt/serve-favicon#0.0.0+20160316155526"
+    "serve-favicon": "registry:dt/serve-favicon#0.0.0+20160316155526",
+    "vue": "registry:dt/vue#1.0.21+20160929090511"
   },
   "dependencies": {
     "bluebird": "registry:npm/bluebird#3.4.1+20160909132857",

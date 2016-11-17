@@ -17,7 +17,9 @@ const pg = pgPromise({
 
 const qrm = pgPromise.queryResult
 
-import { Guest, Hotel } from './models/schemas/schemas'
+import { Guest, Hotel, Room, RoomType, Reservation } from './models/schemas/schemas'
+
+export interface RoomReservation extends Hotel, Room, RoomType, Reservation {} 
 
 const guests = {
 
@@ -25,12 +27,6 @@ const guests = {
 
         let key = `id`
         let keyValue = guest.id
-        
-        console.log(pgPromise.as.format(`
-                UPDATE guests 
-                SET $<attr^> = $<attrValue> 
-                WHERE $<key^> = $<keyValue>;`, 
-                { key, keyValue, attr, attrValue }))
 
         pg.none(`
                 UPDATE guests 
@@ -54,12 +50,6 @@ const guests = {
     },
 
     selectOne: (key: string, keyValue: string | number, done) => {
-
-        console.log(pgPromise.as.format(`
-                SELECT * 
-                FROM guests 
-                WHERE $<key^> = $<keyValue>;`, 
-                { key, keyValue }))
 
         pg.oneOrNone(`
                 SELECT * 
@@ -86,12 +76,6 @@ const guests = {
 
     selectMany: (key: string, keyValue: string | number, done) => {
 
-        console.log(pgPromise.as.format(`
-                SELECT * 
-                FROM guests 
-                WHERE $<key^> = $<keyValue>;`, 
-                { key, keyValue }))
-
         pg.any(`
                 SELECT * 
                 FROM guests 
@@ -117,11 +101,6 @@ const guests = {
 
     insert: (guest: Guest, done) => {
 
-        console.log(pgPromise.as.format(`
-                INSERT INTO guests ($<this~>) 
-                VALUES ($<first_name>, $<last_name>, $<email>, $<user_password>);`,
-                guest))
-
         pg.none(`
                 INSERT INTO guests ($<this~>) 
                 VALUES ($<first_name>, $<last_name>, $<email>, $<user_password>);`, 
@@ -143,38 +122,7 @@ const guests = {
 
 const hotels = {
 
-    selectCities: (done) => {
-        
-        console.log(pgPromise.as.format(`
-                SELECT UNIQUE city 
-                FROM hotels;`))
-
-        pg.any(`
-                SELECT UNIQUE city 
-                FROM hotels;`)
-            .then((cities) => {
-                if (cities) {
-                    console.log(`There are cities`)
-                    return done(null, cities)
-                }
-                console.log(`There are NO cities`)
-                return done(null, false)
-            })
-            .catch((err) => {
-                console.log(`Querying error: `, err)
-                return done(new Error(`Querying error: ${err}`))
-            })
-            .finally(() => {
-                // for immediate app exit, closing the connection pool.
-                pgPromise.end()
-            })
-    },
-
     selectAll: (done) => {
-
-        console.log(pgPromise.as.format(`
-                SELECT * 
-                FROM hotels;`))
 
         pg.any(`
                 SELECT * 
@@ -199,12 +147,6 @@ const hotels = {
 
     selectMany: (key: string, keyValue: string | number, done) => {
 
-        console.log(pgPromise.as.format(`
-                SELECT * 
-                FROM guests 
-                WHERE $<key^> = $<keyValue>;`, 
-                { key, keyValue }))
-
         pg.any(`
                 SELECT * 
                 FROM guests 
@@ -226,7 +168,118 @@ const hotels = {
                 // for immediate app exit, closing the connection pool.
                 pgPromise.end()
             })
+    },
+
+    selectUnreservedRooms: (roomRes: RoomReservation, done) => {
+
+        pg.any(`
+                select *
+                from   rooms, room_types, prices, hotels
+                where
+                    rooms.hotel_id  = hotels.id and
+                    room_types.id   = rooms.room_type and
+                    prices.hotel_id = hotels.id and
+                    room_types.id   = prices.room_type_id and
+                    rooms.id not in (           
+                        select distinct r.id
+                        from   rooms as r, room_types as rt, hotels as h, reservations as rs
+                        where
+                            h.city      = $<city>    and
+                            r.hotel_id  = h.id       and
+                            r.room_type = rt.id      and
+                            r.id        = rs.room_id and (
+                                daterange(date $<arrival_date>, date $<departure_date>) * 
+                                daterange(rs.arrival_date, rs.departure_date)) <> 'empty')`, 
+                roomRes)
+            .then((roomReservs: RoomReservation[]) => {
+                if (roomReservs.length > 0) {
+                    console.log(`
+                            There are rooms available in ${roomRes.city}
+                            from ${roomRes.arrival_date} to ${roomRes.departure_date}`)
+                    return done(null, roomReservs)
+                }
+                console.log(`
+                        There are rooms availablee in ${roomRes.city}
+                        from ${roomRes.arrival_date} to ${roomRes.departure_date}`)
+                return done(null, false)
+            })
+            .catch((err) => {
+                console.log(`Querying error: `, err)
+                return done(new Error(`Querying error: ${err}`))
+            })
+            .finally(() => {
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end()
+            })
+
     }
 }
+
+export function del(tableName: string, key: string, keyValue: string | number, done): void {
+
+    pg.none(`
+            DELETE $<tableName>
+            WHERE  $<key^> = $<keyValue>;`,
+            { tableName, key, keyValue })
+        .then(() => {
+            console.log(`Tuples with ${key} ${keyValue} deleted from ${tableName}`)
+            return done(null, false)
+        })
+        .catch((err) => {
+            console.log(`Querying error: `, err)
+            return done(new Error(`Querying error: ${err}`))
+        })
+        .finally(() => {
+            // for immediate app exit, closing the connection pool.
+            pgPromise.end()
+        })
+}
+
+export function selectAll(tableName: string, done): void {
+
+    pg.any(`
+            SELECT * 
+            FROM   $<tableName>;`,
+            tableName)
+        .then((tuples: any[]) => {
+            if (tuples.length > 0) {
+                console.log(`There are tuples in ${tableName}`)
+                return done(null, tuples)
+            }
+            console.log(`There are NO tuples in ${tableName}`)
+            return done(null, false)
+        })
+        .catch((err) => {
+            console.log(`Querying error: `, err)
+            return done(new Error(`Querying error: ${err}`))
+        })
+        .finally(() => {
+            // for immediate app exit, closing the connection pool.
+            pgPromise.end()
+        })
+}
+
+export function update(key: string, keyValue: string | number, attr: string, attrValue: string, done) {
+
+        pg.none(`
+                UPDATE guests 
+                SET    $<attr^> = $<attrValue> 
+                WHERE  $<key^> = $<keyValue>;`, 
+                { key, keyValue, attr, attrValue })
+            .then(() => {
+                console.log(`
+                        Successful update of ${attr} to ${attrValue} 
+                        of guest with ${key} ${keyValue}`)
+                return done(null, true)
+            })
+            .cathc((err) => {
+                console.log(`Updating error: `, err)
+                return done(new Error(`Updating error: ${err}`))
+            })
+            .finally(() => {
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end()
+            })
+    }
 
 export { guests, hotels }

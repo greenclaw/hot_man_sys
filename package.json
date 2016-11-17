@@ -17,6 +17,7 @@
     "debug": "~2.1.1",
     "express": "~4.12.2",
     "express-session": "^1.14.2",
+    "express-vue": "^3.0.2",
     "gulp-less": "^3.3.0",
     "jquery": "^3.1.1",
     "jquery-ui": "^1.12.1",
@@ -31,11 +32,12 @@
     "req-flash": "0.0.3",
     "serve-favicon": "~2.2.0",
     "shelljs": "^0.7.5",
-    "vue": "^2.0.5"
+    "vue": "^2.0.7",
+    "vue-material": "^0.3.1"
   },
   "devDependencies": {
     "browser-sync": "^2.8.2",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-less": "^3.0.3",
     "gulp-mocha": "^2.1.2",
     "gulp-nodemon": "^2.0.3",
@@ -43,10 +45,13 @@
     "gulp-tsb": "^1.4.4",
     "gulp-typings": "^2.0.4",
     "marked": "^0.3.5",
+    "merge-stream": "^1.0.0",
     "mocha": "^2.2.5",
     "nodemon": "^1.4.0",
     "pg-monitor": "^0.5.11",
     "typescript": "^1.8.10",
-    "typings": "^2.0.0"
+    "typings": "^2.0.0",
+    "webpack": "^1.13.3",
+    "webpack-stream": "^3.2.0"
   }
 }

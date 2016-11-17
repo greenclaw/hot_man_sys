@@ -19,6 +19,8 @@ const passport = require('passport')
 const passportLocal = require('passport-local')
 const LocalStrategy = passportLocal.Strategy
 
+// const expressVue =  require('express-vue')
+
 // models and schemas
 import * as model from './model'
 import * as schemas from './models/schemas/schemas' 
@@ -27,6 +29,15 @@ const app: express.Express = express();
 
 // view engine setup
 app.set('views', join(__dirname, 'views'));
+/*
+app.set(`vue`, {
+  rootPath: __dirname + `/`,
+  layoutsDir: 'views/',
+  componentsDir: 'views/components',
+  defaultLayout: `layout`
+})
+app.engine(`vue`, expressVue)
+*/
 app.set('view engine', 'pug');
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -49,8 +60,9 @@ app.use(passport.session());
 app.use(`/jquery`,    express.static(__dirname + '/../node_modules/jquery/dist/'))
 app.use(`/tether`,    express.static(__dirname + '/../node_modules/tether/dist/'))
 app.use(`/bootstrap`, express.static(__dirname + '/../node_modules/bootstrap/dist/'))
-app.use(`/moment`,    express.static(__dirname + '/../node_modules/moment/'))
-app.use(`/vue`,       express.static(__dirname + '/../node_modules/vue/dist/'))
+app.use(`/moment`,       express.static(__dirname + '/../node_modules/moment/'))
+app.use(`/vue`,          express.static(__dirname + '/../node_modules/vue/dist/'))
+app.use(`/vue-material`, express.static(__dirname + '/../node_modules/vue-material/dist/'))
 
 
 app.use('/', index);

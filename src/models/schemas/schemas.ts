@@ -45,7 +45,7 @@ export interface HotelOwner {
     owner_id: number
 }
 
-export interface RoomTypes extends Table {
+export interface RoomType extends Table {
     class_name: string,
     capacity: number,
     bed_num: number

@@ -10,7 +10,7 @@ var cp = require('child_process');
 var tsb = require('gulp-tsb');
 var sourcemaps = require('gulp-sourcemaps');
 var gulpTypings = require("gulp-typings");
-
+var merge = require('merge-stream');
 
 // compile less files from the ./styles folder
 // into css files to the ./public/styles folder
@@ -64,9 +64,16 @@ gulp.task('nodemon', function (cb) {
 // TypeScript build for /src folder, pipes in .d.ts files from typings folder 
 var tsConfigSrc = tsb.create('src/tsconfig.json');
 gulp.task('build', function () {
-    return gulp.src(['typings/**/*.ts', 'src/**/*.ts'])
+    
+    let server = gulp.src(['typings/**/*.ts', 'src/**/*.ts'])
         .pipe(tsConfigSrc()) 
         .pipe(gulp.dest('src'));
+    
+    let client = gulp.src(['typings/**/*.ts', 'src/scripts/**/*.ts'])
+        .pipe(tsConfigSrc())
+        .pipe(gulp.dest('src/public/scripts'));
+
+    return merge(server, client)
 });
 
 // TypeScript build for /tests folder, pipes in .d.ts files from typings folder

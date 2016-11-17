@@ -14,16 +14,16 @@ const renderWithAlerts = (req: express.Request, res: express.Response,
     view: string, options: Object) => {
   res.render(view, (Object as any).assign(
     {
-      danger: req.flash(`danger`),
+      danger:  req.flash(`danger`),
       warning: req.flash(`warning`),
-      info: req.flash(`info`),
+      info:    req.flash(`info`),
       success: req.flash(`success`)
     },
     options
   ))
 }
 
-// GET home page
+// GET index page
 index.get('/', (req, res, next) => {
   model.hotels.selectAll((err, hotels: schemas.Hotel[]) => {
     renderWithAlerts(req, res, `index`, {
@@ -32,6 +32,16 @@ index.get('/', (req, res, next) => {
     })
   })
 });
+
+// Handle index POST
+index.post(`/`, (req, res, next) => {
+    model.hotels.selectUnreservedRooms(req.body as model.RoomReservation, (err, roomReservs) => {
+      renderWithAlerts(req, res, `index`, {
+        guest: req.user,
+        roomReservs
+      })
+    })
+  })
 
 // GET login page
 index.get('/login', (req, res, next) => {
