@@ -1,5 +1,3 @@
-﻿﻿
--- hotel id searching
 CREATE UNIQUE INDEX primary_hotel
   ON public.hotels
   USING btree
@@ -49,12 +47,9 @@ CREATE UNIQUE INDEX primary_log
 ALTER TABLE public.logs
   CLUSTER ON primary_log;
 
- CREATE INDEX log_searching
+CREATE INDEX log_searching
    ON public.logs USING btree
    (log_status ASC, log_time ASC );
-
-   
-
 
 -- calculating budget and executes by after delete trigger on reservations
 create or replace function update_budget()
@@ -83,7 +78,6 @@ AFTER DELETE ON reservations
 FOR EACH ROW
 EXECUTE PROCEDURE update_budget();
 
-	  
 -- reserving procedure
 create or replace function reserve_room(room_id integer, guest_id integer, arrive varchar, dep varchar)
 returns boolean as $$
