@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    .login
+        .container-fluid
+            .row
+                .col-sm-8.offset-sm-2
+                    form(role='form' action='/login' method='post').mt-3
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="email").col-form-label Email
+                            .col-sm-6
+                                input(type='text' name='email')#email.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="user_password").col-form-label Passowrd
+                            .col-sm-6
+                                input(type='password' name='user_password')#user_password.form-control
+                        .row.form-group
+                            .col-sm-6.offset-sm-3
+                                input(type='submit' value='Log In')#submit.btn.btn-primary.btn-block

@@ -1,0 +1,23 @@
+nav.navbar.navbar-fixed-top.navbar-light.bg-faded
+
+    button(type="button" data-toggle="collapse" data-target="#navbarResponsive" 
+            aria-controls="navbarResponsive" aria-expanded="false" 
+            aria-label="Toggle navigation").navbar-toggler.hidden-lg-up
+
+    a(href='/' title='HotManSys').navbar-brand#navbar-brand HotManSys
+    
+    .collapse.navbar-toggleable-md#navbarResponsive
+        ul.nav.navbar-nav
+            // if logged in
+            if guest
+                li.nav-item
+                    a(href='/profile' title='My Profile').nav-link My Profile
+                li.nav-item
+                    a(href='/reservations' title='My Reservations').nav-link My Reservations
+                li.nav-item
+                    a(href='/logout' title='Log Out').nav-link Log Out
+            else
+                li.nav-item
+                    a(href='/login' title='Log In').nav-link Log In
+                li.nav-item
+                    a(href='/signup' title='Sign Up').nav-link Sign Up

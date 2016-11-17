@@ -1,0 +1,82 @@
+.capitalize {
+  text-transform: capitalize;
+}
+#navbar-brand {
+  float: right;
+}
+.layout {
+  padding-top: 3.5rem;
+}
+.index .url {
+  word-break: break-all;
+}
+::selection {
+  background: #b4d5fe;
+}
+::-moz-selection {
+  background: #b4d5fe;
+}
+.container a:hover,
+.container a:focus {
+  text-shadow: 0.03em 0 #ffffff, -0.03em 0 #ffffff, 0 0.03em #ffffff, 0 -0.03em #ffffff, 0.06em 0 #ffffff, -0.06em 0 #ffffff, 0.09em 0 #ffffff, -0.09em 0 #ffffff, 0.12em 0 #ffffff, -0.12em 0 #ffffff, 0.15em 0 #ffffff, -0.15em 0 #ffffff !important;
+  background-image: linear-gradient(#0275d8, #0275d8) !important;
+  background-size: 1px 1px !important;
+  background-repeat: repeat-x !important;
+  background-position: 0% 95% !important;
+  color: #0275d8 !important;
+  text-decoration: none !important;
+}
+.container a:hover::selection,
+.container a:focus::selection {
+  text-shadow: 0.03em 0 #b4d5fe, -0.03em 0 #b4d5fe, 0 0.03em #b4d5fe, 0 -0.03em #b4d5fe, 0.06em 0 #b4d5fe, -0.06em 0 #b4d5fe, 0.09em 0 #b4d5fe, -0.09em 0 #b4d5fe, 0.12em 0 #b4d5fe, -0.12em 0 #b4d5fe, 0.15em 0 #b4d5fe, -0.15em 0 #b4d5fe !important;
+  background: #b4d5fe !important;
+}
+.container a:hover::-moz-selection,
+.container a:focus::-moz-selection {
+  text-shadow: 0.03em 0 #b4d5fe, -0.03em 0 #b4d5fe, 0 0.03em #b4d5fe, 0 -0.03em #b4d5fe, 0.06em 0 #b4d5fe, -0.06em 0 #b4d5fe, 0.09em 0 #b4d5fe, -0.09em 0 #b4d5fe, 0.12em 0 #b4d5fe, -0.12em 0 #b4d5fe, 0.15em 0 #b4d5fe, -0.15em 0 #b4d5fe !important;
+  background: #b4d5fe !important;
+}
+.container a:hover *,
+.container a:focus *,
+.container a:hover *:after,
+.container a:focus *:after,
+.container a:hover:after,
+.container a:focus:after,
+.container a:hover *:before,
+.container a:focus *:before,
+.container a:hover:before,
+.container a:focus:before {
+  text-shadow: none !important;
+}
+.container a:hover:visited,
+.container a:focus:visited {
+  color: #0275d8 !important;
+}
+@media (max-width: 544px) {
+  .login #submit,
+  .signup #submit {
+    margin-top: 3rem;
+  }
+}
+/*
+@color-text:        #333332;
+@color-background:  #fff;
+@color-selection:   #b4d5fe;
+
+body {
+  font-family: freight-text-pro, georgia, serif;
+  font-size: 18px;
+  line-height: 1.4;
+  margin: 20px;
+}
+
+pre {
+  background-color: #eee;
+  font-size: 16px;
+  padding: 20px;  
+}
+
+.post a {
+  .link-underline(@color-background, @color-text, @color-selection);
+}
+*/

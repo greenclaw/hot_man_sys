@@ -1,0 +1,31 @@
+extends layout
+
+block content
+    .signup
+        .container-fluid
+            .row
+                .col-md-8.offset-md-2
+                    form(role='form' action='/signup' method='post').mt-3
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="first_name").col-form-label First Name
+                            .col-sm-6
+                                input(type='text' name='first_name')#first_name.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="last_name").col-form-label Last Name
+                            .col-sm-6
+                                input(type='text' name='last_name')#last_name.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="email").col-form-label Email
+                            .col-sm-6
+                                input(type='text' name='email')#email.form-control
+                        .row.form-group
+                            .col-sm-3.text-sm-right
+                                label(for="user_password").col-form-label Passowrd
+                            .col-sm-6
+                                input(type='password' name='user_password')#user_password.form-control
+                        .row.form-group
+                            .col-sm-6.offset-sm-3
+                                input(type='submit' value='Sign Up')#submit.btn.btn-primary.btn-block

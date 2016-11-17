@@ -1,0 +1,96 @@
+extends layout
+
+block content
+  
+  .index
+    .container-fluid
+      .row
+        .col-xs-12
+          h1.display-1.text-xs-center.my-3 HotManSys
+
+      if hotels
+        .row
+          .col-md-8.offset-md-2
+            form(role='form' action='/' method='post')
+              .form-group
+                .row.my-2
+                  label(for='city').col-md-3.col-form-label.col-form-label-lg.text-md-right City
+                  .col-md-6
+                    select(name="city").form-control-lg.form-control#city
+                      - let cities = hotels.map(hotel => hotel.city)
+                      - cities = Array.from(new Set(cities)).sort()
+                      each city in cities
+                        option= city
+                    small.form-text.text-muted.text-md-center Destination City
+                .row.my-2
+                  label(for='arrival_date').col-md-3.col-form-label.col-form-label-lg.text-md-right From
+                  .col-md-6
+                    input(type='date' placeholder="From Date" name="arrival_date").form-control.form-control-lg#arrival_date
+                    small.form-text.text-muted.text-md-center Check-in Date
+                .row.my-2
+                  label(for='departure_date').col-md-3.col-form-label.col-form-label-lg.text-md-right To
+                  .col-md-6                    
+                    input(type='date' placeholder="To Date" name="departure_date").form-control.form-control-lg#departure_date
+                    small.form-text.text-muted.text-md-center Optional Check-out Date
+                .row.my-2
+                  .col-md-6.offset-md-3
+                    input(type='submit' value='Search')#search.btn.btn-primary.btn-block.btn-lg
+      
+      - if (roomReserves) console.log(`Num of avail. rooms: `, roomReservs.length)
+      if roomReservs
+        .row.my-3
+          .col-xs-12
+            h1.my-3.text-xs-center.display-2 Available Rooms
+            table.table.table-striped.table-bordered
+              thead.thead-inverse
+                tr
+                  th.hotel_name Hotel
+                  th.room       Room
+                  th.price_id   Price
+                  th.address    Address
+                  th.site       Site
+                  th.rating     Rating
+                  th.room_type  Room Type
+                  th.bed_num    Beds
+                  th.floor      Floor
+                  th.capacity   Capacity
+              tbody
+                each roomRes in roomReservs
+                  tr
+                    th.hotel_name.font-weight-bold=  roomRes.hotel_name
+                    th.room=                         roomRes.num
+                    th.price_id=                     roomRes.price_id
+                    th.address=                      roomRes.address
+                    th.site=                         roomRes.url
+                    th.rating=                       roomRes.rating
+                    th.room_type=                    roomRes.room_type
+                    th.bed_num=                      roomRes.bed_num
+                    th.floor=                        roomRes.floor
+                    th.capacity=                     roomRes.capacity
+
+      if hotels
+        .row.mt-3
+          .col-xs-12
+            h1.my-3.text-xs-center.display-2 Hotels
+            table.table.table-striped.table-bordered
+              thead.thead-inverse
+                tr
+                  th.hotel_name Hotel
+                  th.stars_num  Stars
+                  th.price_id   Price
+                  th.country    Country
+                  th.city       City
+                  th.address    Address
+                  th.site       Site
+                  th.rating     Rating
+              tbody
+                each hotel in hotels
+                  tr
+                    td.hotel_name.font-weight-bold= hotel.hotel_name
+                    td.stars_num=                   hotel.star_num
+                    td.price_id=                    hotel.price_id
+                    td.country=                     hotel.country
+                    td.city=                        hotel.city
+                    td.address=                     hotel.address
+                    td.url=                         hotel.url
+                    td.rating=                      hotel.rating
