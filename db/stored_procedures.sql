@@ -26,6 +26,24 @@ CREATE UNIQUE INDEX primary_room
   (id);
 ALTER TABLE public.rooms CLUSTER ON primary_room;
 
+CREATE INDEX hotel_index
+  ON public.rooms
+  USING btree
+  (hotel_id);
+
+--reservation searching
+
+CREATE UNIQUE INDEX primary_reserv
+  ON public.reservations
+  USING btree
+  (id);
+ALTER TABLE public.reservations CLUSTER ON primary_reserv;
+
+CREATE INDEX room_id_index
+  ON public.reservations
+  USING btree
+  (room_id);
+
 -- log searching
 CREATE UNIQUE INDEX primary_log
    ON public.logs USING btree (id ASC);
@@ -35,6 +53,8 @@ ALTER TABLE public.logs
  CREATE INDEX log_searching
    ON public.logs USING btree
    (log_status ASC, log_time ASC );
+
+   
 
 
 -- calculating budget and executes by after delete trigger on reservations
