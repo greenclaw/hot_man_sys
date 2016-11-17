@@ -165,19 +165,19 @@ passport.use('login', new LocalStrategy({
     })
   }))
 
-passport.serializeUser((guest: schemas.Guest, done) => {
-  console.log(`Serializing guest ${guest.email}`)
-  done(null, guest.email);
+passport.serializeUser((user: schemas.User, done) => {
+  console.log(`Serializing guest ${user.email}`)
+  done(null, user.email);
 });
 
-passport.deserializeUser((email, done) => {
-  model.guests.selectOne('email', email, (err, guest: schemas.Guest) => {
+passport.deserializeUser((user, done) => {
+  model.guests.selectOne('email', user, (err, user: schemas.User) => {
     if (err) {
       console.log(`Serializing error: ${err}`)
       return done(err);
     }
-    console.log(`Deserializing guest ${email}`)
-    done(null, guest);
+    console.log(`Deserializing guest ${user}`)
+    done(null, user);
   });
 });
 

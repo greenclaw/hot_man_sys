@@ -122,54 +122,6 @@ const guests = {
 
 const hotels = {
 
-    selectAll: (done) => {
-
-        pg.any(`
-                SELECT * 
-                FROM hotels;`)
-            .then((hotels: Hotel[]) => {
-                if (hotels) {
-                    console.log(`There are hotels`)
-                    return done(null, hotels)
-                }
-                console.log(`There are NO hotels`)
-                return done(null, false)
-            })
-            .catch((err) => {
-                console.log(`Querying error: `, err)
-                return done(new Error(`Querying error: ${err}`))
-            })
-            .finally(() => {
-                // for immediate app exit, closing the connection pool.
-                pgPromise.end()
-            })
-    },
-
-    selectMany: (key: string, keyValue: string | number, done) => {
-
-        pg.any(`
-                SELECT * 
-                FROM guests 
-                WHERE $<key^> = $<keyValue>;`, 
-                { key, keyValue })
-            .then((hotels: Hotel[]) => {
-                if (hotels) {
-                    console.log(`There are guests with ${key} ${keyValue}`)
-                    return done(null, hotels)
-                }
-                console.log(`There is NO guests with ${key} ${keyValue}`)
-                return done(null, false)
-            })
-            .catch((err) => {
-                console.log(`Querying error: `, err)
-                return done(new Error(`Querying error: ${err}`))
-            })
-            .finally(() => {
-                // for immediate app exit, closing the connection pool.
-                pgPromise.end()
-            })
-    },
-
     selectUnreservedRooms: (roomRes: RoomReservation, done) => {
 
         pg.any(`
@@ -235,6 +187,56 @@ export function del(tableName: string, key: string, keyValue: string | number, d
         })
 }
 
+export function selectOne(tableName: string, key: string, keyValue: string | number, done) {
+
+    pg.oneOrNone(`
+            SELECT * 
+            FROM   $<tableName>
+            WHERE  $<key^> = $<keyValue>;`, 
+            { tableName, key, keyValue })
+        .then((tuple: any) => {
+            if (tuple) {
+                console.log(`There is a tuple with ${key} ${keyValue} in ${tableName}`)
+                return done(null, tuple)
+            }
+            console.log(`There is NO tuple with ${key} ${keyValue} in ${tableName}`)
+            return done(null, false)
+        })
+        .catch((err) => {
+            console.log(`Querying error: `, err)
+            return done(new Error(`Querying error: ${err}`))
+        })
+        .finally(() => {
+            // for immediate app exit, closing the connection pool.
+            pgPromise.end()
+        })
+}
+
+export function selectMany(tableName: string, key: string, keyValue: string | number, done) {
+
+    pg.any(`
+            SELECT * 
+            FROM   $<tableName> 
+            WHERE  $<key^> = $<keyValue>;`, 
+            { key, keyValue })
+        .then((tuples: any[]) => {
+            if (tuples.length > 0) {
+                console.log(`There are tuples with ${key} ${keyValue} in ${tableName}`)
+                return done(null, tuples)
+            }
+            console.log(`There are NO tuples with ${key} ${keyValue} in ${tableName}`)
+            return done(null, false)
+        })
+        .catch((err) => {
+            console.log(`Querying error: `, err)
+            return done(new Error(`Querying error: ${err}`))
+        })
+        .finally(() => {
+            // for immediate app exit, closing the connection pool.
+            pgPromise.end()
+        })
+}
+
 export function selectAll(tableName: string, done): void {
 
     pg.any(`
@@ -261,25 +263,25 @@ export function selectAll(tableName: string, done): void {
 
 export function update(key: string, keyValue: string | number, attr: string, attrValue: string, done) {
 
-        pg.none(`
-                UPDATE guests 
-                SET    $<attr^> = $<attrValue> 
-                WHERE  $<key^> = $<keyValue>;`, 
-                { key, keyValue, attr, attrValue })
-            .then(() => {
-                console.log(`
-                        Successful update of ${attr} to ${attrValue} 
-                        of guest with ${key} ${keyValue}`)
-                return done(null, true)
-            })
-            .cathc((err) => {
-                console.log(`Updating error: `, err)
-                return done(new Error(`Updating error: ${err}`))
-            })
-            .finally(() => {
-                // for immediate app exit, closing the connection pool.
-                pgPromise.end()
-            })
-    }
+    pg.none(`
+            UPDATE guests 
+            SET    $<attr^> = $<attrValue> 
+            WHERE  $<key^>  = $<keyValue>;`, 
+            { key, keyValue, attr, attrValue })
+        .then(() => {
+            console.log(`
+                    Successful update of ${attr} to ${attrValue} 
+                    of guest with ${key} ${keyValue}`)
+            return done(null, true)
+        })
+        .cathc((err) => {
+            console.log(`Updating error: `, err)
+            return done(new Error(`Updating error: ${err}`))
+        })
+        .finally(() => {
+            // for immediate app exit, closing the connection pool.
+            pgPromise.end()
+        })
+}
 
 export { guests, hotels }
