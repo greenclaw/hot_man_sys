@@ -1,8 +1,14 @@
-.blocktext {
-  font-family: 'Pragmata Pro', 'Courier New', Courier, monospace;
-}
 .capitalize {
   text-transform: capitalize;
+}
+#navbar-brand {
+  float: right;
+}
+.layout {
+  padding-top: 3.5rem;
+}
+.index .url {
+  word-break: break-all;
 }
 @media (max-width: 544px) {
   .login #submit,

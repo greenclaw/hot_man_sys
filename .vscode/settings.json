@@ -42,6 +42,10 @@
     // Вставка фрагментов при совпадении их префиксов. Функция работает оптимально, если параметр "quickSuggestions" отключен.
     "editor.tabCompletion": true,
 
+// Guides Configurations
+
+    // Send anonymous usage statistics data to the developer.
+	"guides.sendUsagesAndStats": false,
 
 
 // Файлы

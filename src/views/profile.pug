@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  .container
+    .row
+      .col-sm-12
+
+        if guest
+          h2 You are logged in. <a href="/logout" title="Log Out">Log Out</a>
+          hr
+          h3 Profile
+          dl.row
+            each val, index in guest
+              dt.col-sm-4.capitalize= index.replace(`_`, ` `)
+              dd.col-sm-8= val
+        else
+          h2 You are not logged in. <a href="/login" title="Log In">Log In</a> or <a href="/signup" title="Sign Up">Sign Up</a>

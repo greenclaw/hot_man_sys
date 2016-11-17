@@ -3,8 +3,10 @@
 import * as bluebirdPromise from 'bluebird'
 
 const pgPromiseOptions = { promiseLib: bluebirdPromise }
-import * as postgresPromise from 'pg-promise';
+const postgresPromise = require('pg-promise')
+const pgMonitor = require("pg-monitor");
 const pgPromise = postgresPromise(pgPromiseOptions);
+pgMonitor.attach(pgPromiseOptions)
 const pg = pgPromise({
     host: 'localhost',
     port: 5433,
@@ -15,127 +17,192 @@ const pg = pgPromise({
 
 const qrm = pgPromise.queryResult
 
-interface Table {
-    id: number
-}
-
-interface Guest extends Table {
-    first_name: string,
-    last_name: string,
-    age?: number,
-    phone?: string,
-    email: string,
-    guest_password: string
-}
+import { Table, Guest, Hotel } from './models/schemas/schemas'
 
 const guests = {
 
-    getOne: (attribute: string, value: string | number, callback) => {
+    update: (guest: Guest, attr: string, attrValue: string, done) => {
 
-        console.log(pgPromise.as.format(`SELECT * FROM guests WHERE $<attribute> = $<value>`, 
-            { attribute, value }))
+        let key = `id`
+        let keyValue = guest.id
+        
+        console.log(pgPromise.as.format(`
+                UPDATE guests 
+                SET $<attr^> = $<attrValue> 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue, attr, attrValue }))
 
-        pg.oneOrNone(`SELECT * FROM guests WHERE $<attribute> = $<value>`, { attribute, value })
-            .then((guest: Guest) => {
-                if (guest) {
-                    console.log(`There is a guest with ${attribute} ${value}`)
-                    return callback(null, guest)
-                }
-                console.log(`There is NO guest with ${attribute} ${value}`)
-                callback(new Error(`There is NO guest with ${attribute} ${value}`))
+        pg.none(`
+                UPDATE guests 
+                SET $<attr^> = $<attrValue> 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue, attr, attrValue })
+            .then(() => {
+                console.log(`
+                        Successful update of ${attr} to ${attrValue} 
+                        of guest with ${key} ${keyValue}`)
+                return done(null, guest)
             })
-            .catch((error) => {
-                console.log(`ERROR: `, error)
-                callback(error)
+            .cathc((err) => {
+                console.log(`Updating error: `, err)
+                return done(new Error(`Updating error: ${err}`))
             })
             .finally(() => {
+                // for immediate app exit, closing the connection pool.
                 pgPromise.end()
             })
     },
 
-    create: (guest: Guest, callback) => {
+    selectOne: (key: string, keyValue: string | number, done) => {
 
-        console.log(pgPromise.as.format(`INSERT INTO guests (
-                $<this~>
-            ) VALUES (
-                $<first_name>,
-                $<last_name>,
-                $<email>,
-                $<guest_password> 
-            );`, guest))
+        console.log(pgPromise.as.format(`
+                SELECT * 
+                FROM guests 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue }))
 
-        pg.none(`INSERT INTO guests (
-                $<this~>
-            ) VALUES (
-                $<first_name>,
-                $<last_name>,
-                $<email>,
-                $<guest_password> 
-            );`, guest)
-            .then(() => {
-                callback(null, guest)
+        pg.oneOrNone(`
+                SELECT * 
+                FROM guests 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue })
+            .then((guest: Guest) => {
+                if (guest) {
+                    console.log(`There is a guest with ${key} ${keyValue}`)
+                    return done(null, guest)
+                }
+                console.log(`There is NO guest with ${key} ${keyValue}`)
+                return done(null, false)
             })
-            .catch((error) => {
-                console.log("ERROR:", error); // print the error;
-                callback(error)
+            .catch((err) => {
+                console.log(`Querying error: `, err)
+                return done(new Error(`Querying error: ${err}`))
             })
             .finally(() => {
-                pgPromise.end(); // for immediate app exit, closing the connection pool.
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end()
+            })
+    },
+
+    selectMany: (key: string, keyValue: string | number, done) => {
+
+        console.log(pgPromise.as.format(`
+                SELECT * 
+                FROM guests 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue }))
+
+        pg.any(`
+                SELECT * 
+                FROM guests 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue })
+            .then((guests: Guest[]) => {
+                if (guests) {
+                    console.log(`There are guests with ${key} ${keyValue}`)
+                    return done(null, guests)
+                }
+                console.log(`There are NO guests with ${key} ${keyValue}`)
+                return done(null, false)
+            })
+            .catch((err) => {
+                console.log(`Querying error: `, err)
+                return done(new Error(`Querying error: ${err}`))
+            })
+            .finally(() => {
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end()
+            })
+    },
+
+    insert: (guest: Guest, done) => {
+
+        let key = `id`
+        let keyValue = guest.id
+
+        console.log(pgPromise.as.format(`
+                INSERT INTO guests ($<this~>) 
+                VALUES ($<first_name>, $<last_name>, $<email>, $<guest_password>);`,
+                guest))
+
+        pg.none(`
+                INSERT INTO guests ($<this~>) 
+                VALUES ($<first_name>, $<last_name>, $<email>, $<guest_password>);`, 
+                guest)
+            .then(() => {
+                console.log(`Successful inserting of ${guest}`);
+                return done(null, guest)
+            })
+            .catch((err) => {
+                console.log("Inserting error: ", err);
+                return done(new Error(`Inserting error: ${err}`))
+            })
+            .finally(() => {
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end(); 
             });
     }
 }
 
-export { Table, Guest, guests }
+const hotels = {
 
-/*
-    getByEmail: (email: string, callback) => {
-        pg.oneOrNone(`SELECT * FROM guests WHERE email = '${email}'`, email)
-            .then((guest: Guest) => {
-                if (guest) {
-                    console.log(`Email is correct`)
-                    return callback(null, guest)
+    selectAll: (done) => {
+
+        console.log(pgPromise.as.format(`
+                SELECT * 
+                FROM hotels;`))
+
+        pg.any(`
+                SELECT * 
+                FROM hotels;`)
+            .then((hotels: Hotel[]) => {
+                if (hotels) {
+                    console.log(`There are hotels`)
+                    return done(null, hotels)
                 }
-                console.log(`Email is not correct`)
-                callback(new Error(`Email is not correct`))
+                console.log(`There are NO hotels`)
+                return done(null, false)
             })
-            .catch((error) => {
-                console.log("ERROR:", error); // print the error;
-                callback(error)
+            .catch((err) => {
+                console.log(`Querying error: `, err)
+                return done(new Error(`Querying error: ${err}`))
             })
             .finally(() => {
-                pgPromise.end(); // for immediate app exit, closing the connection pool.
-            });
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end()
+            })
     },
 
-    getById: (id: number, callback) => {
-        pg.oneOrNone(`SELECT * FROM guests WHERE id = '${id}'`, id)
-            .then((guest: Guest) => {
-                if (guest) {
-                    console.log(`There is a guest ${id}`)
-                    return callback(null, guest)
+    selectMany: (key: string, keyValue: string | number, done) => {
+
+        console.log(pgPromise.as.format(`
+                SELECT * 
+                FROM guests 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue }))
+
+        pg.any(`
+                SELECT * 
+                FROM guests 
+                WHERE $<key^> = $<keyValue>;`, 
+                { key, keyValue })
+            .then((hotels: Hotel[]) => {
+                if (hotels) {
+                    console.log(`There are guests with ${key} ${keyValue}`)
+                    return done(null, hotels)
                 }
-                callback(new Error(`Guest ${id} does not exist`))
+                console.log(`There is NO guests with ${key} ${keyValue}`)
+                return done(null, false)
             })
-            .catch((error) => {
-                console.log("ERROR:", error); // print the error;
-                callback(error)
+            .catch((err) => {
+                console.log(`Querying error: `, err)
+                return done(new Error(`Querying error: ${err}`))
             })
             .finally(() => {
-                pgPromise.end(); // for immediate app exit, closing the connection pool.
-            });
-    },
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end()
+            })
+    }
+}
 
-pg.query(`select table_name, column_name, data_type, character_maximum_length
-from INFORMATION_SCHEMA.COLUMNS 
-WHERE table_schema = 'public' 
-ORDER BY table_name;`)
-    .then(function (data) {
-        console.log("DATA:", data); // print data;
-    })
-    .catch(function (error) {
-        console.log("ERROR:", error); // print the error;
-    })
-    .finally(function () {
-        pgp.end(); // for immediate app exit, closing the connection pool.
-    });
-*/
+export { guests, hotels }

@@ -1,20 +1,21 @@
 /// <reference path="../typings/index.d.ts" />
 "use strict";
-var express = require('express');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var path_1 = require('path');
-var index_1 = require('./routes/index');
-var management_1 = require('./routes/management');
-var administration_1 = require('./routes/administration');
-var cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
-var favicon = require('serve-favicon');
-var connectFlash = require('connect-flash');
-var passport = require('passport');
-var passportLocal = require('passport-local');
-var LocalStrategy = passportLocal.Strategy;
-var model = require('./model');
-var app = express();
+const express = require('express');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const path_1 = require('path');
+const index_1 = require('./routes/index');
+const manage_1 = require('./routes/manage');
+const admin_1 = require('./routes/admin');
+const cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
+const favicon = require('serve-favicon');
+const connectFlash = require('connect-flash');
+const passport = require('passport');
+const passportLocal = require('passport-local');
+const LocalStrategy = passportLocal.Strategy;
+// models and schemas
+const model = require('./model');
+const app = express();
 // view engine setup
 app.set('views', path_1.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -32,15 +33,16 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(connectFlash());
 app.use(passport.session());
-app.use("/jquery", express.static(__dirname + '/../node_modules/jquery/dist/'));
-app.use("/tether", express.static(__dirname + '/../node_modules/tether/dist/'));
-app.use("/bootstrap", express.static(__dirname + '/../node_modules/bootstrap/dist/'));
-app.use("/vue", express.static(__dirname + '/../node_modules/vue/dist/'));
+app.use(`/jquery`, express.static(__dirname + '/../node_modules/jquery/dist/'));
+app.use(`/tether`, express.static(__dirname + '/../node_modules/tether/dist/'));
+app.use(`/bootstrap`, express.static(__dirname + '/../node_modules/bootstrap/dist/'));
+app.use(`/moment`, express.static(__dirname + '/../node_modules/moment/'));
+app.use(`/vue`, express.static(__dirname + '/../node_modules/vue/dist/'));
 app.use('/', index_1.default);
-app.use('/management', management_1.default);
-app.use('/administration', administration_1.default);
+app.use('/manage', manage_1.default);
+app.use('/admin', admin_1.default);
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     var err = new Error('Not Found');
     err['status'] = 404;
     next(err);
@@ -50,7 +52,7 @@ app.set('env', 'development');
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function (error, req, res, next) {
+    app.use((error, req, res, next) => {
         res.status(error['status'] || 500);
         res.render('error', {
             message: error.message,
@@ -60,41 +62,41 @@ if (app.get('env') === 'development') {
 }
 // production error handler
 // no stacktraces leaked to user
-app.use(function (error, req, res, next) {
+app.use((error, req, res, next) => {
     res.status(error['status'] || 500);
     res.render('error', {
         message: error.message,
         error: {}
     });
-    return null;
+    null;
 });
 passport.use('signup', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'guest_password',
     session: true,
     passReqToCallback: true
-}, function (req, email, password, done) {
-    model.guests.getOne('email', email, function (err, guest) {
+}, (req, email, password, done) => {
+    model.guests.selectOne('email', email, (err, guest) => {
         // in case of any error
         if (err) {
-            console.log("Guest signup error: " + err);
-            return done(err);
+            console.log(`Guest signup error: ${err}`);
+            return done(err, false, req.flash(`danger`, `Guest signup error: ${err}`));
         }
         // guest already exists
         if (guest) {
-            console.log("Guest " + email + " already exists");
-            return done(null, false, { message: "Guest " + email + " already exists" });
+            console.log(`Guest ${email} already exists`);
+            return done(null, false, req.flash(`warning`, `Guest ${email} already exists`));
         }
         // create a new guest
-        model.guests.create(req.body, function (err, guest) {
+        model.guests.insert(req.body, (err, guest) => {
             // in case of any error
             if (err) {
-                console.log("Guest creation error: " + err);
-                return done(err);
+                console.log(`Guest creation error: ${err}`);
+                return done(err, false, req.flash(`danger`, `Guest creation error: ${err}`));
             }
             // new guest created
-            console.log("New guest created: " + guest);
-            return done(null, guest, { message: "New guest created: " + guest });
+            console.log(`New guest created: `, guest);
+            done(null, guest, req.flash(`success`, `New guest created: ${guest}`));
         });
     });
 }));
@@ -103,37 +105,40 @@ passport.use('login', new LocalStrategy({
     passwordField: 'guest_password',
     session: true,
     passReqToCallback: true
-}, function (req, email, password, done) {
-    model.guests.getOne('email', email, function (err, guest) {
+}, (req, email, password, done) => {
+    model.guests.selectOne('email', email, (err, guest) => {
         // in case of any error
         if (err) {
-            console.log("Guest login error: " + err);
+            console.log(`Guest login error: ${err}`);
             return done(err);
         }
         // no guest found
         if (!guest) {
-            console.log("No guest with email " + email);
-            return done(null, false, { message: "No guest with email " + email });
+            console.log(`No guest with email ${email}`);
+            return done(null, false, { message: `No guest with email ${email}` });
         }
         // incorrect password
         if (guest.guest_password != password) {
-            console.log("Incorrect password for " + email);
-            return done(null, false, { message: "Incorrect password for " + email });
+            console.log(`Incorrect password for ${email}`);
+            return done(null, false, { message: `Incorrect password for ${email}` });
         }
         // correct password
-        console.log("Successful login for " + email);
-        return done(null, guest, { message: "Successful login for " + email });
+        console.log(`Successful login for ${email}`);
+        done(null, guest, { message: `Successful login for ${email}` });
     });
 }));
-passport.serializeUser(function (guest, done) {
-    return done(null, guest.id);
+passport.serializeUser((guest, done) => {
+    console.log(`Serializing guest ${guest.email}`);
+    done(null, guest.email);
 });
-passport.deserializeUser(function (id, done) {
-    model.guests.getOne('id', id, function (err, guest) {
+passport.deserializeUser((email, done) => {
+    model.guests.selectOne('email', email, (err, guest) => {
         if (err) {
+            console.log(`Serializing error: ${err}`);
             return done(err);
         }
-        return done(null, guest);
+        console.log(`Deserializing guest ${email}`);
+        done(null, guest);
     });
 });
 Object.defineProperty(exports, "__esModule", { value: true });

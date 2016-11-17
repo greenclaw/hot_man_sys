@@ -8,19 +8,26 @@ html
       meta(name="description" content="")
       meta(name="viewport" content="width=device-width, initial-scale=1")
       link(rel="apple-touch-icon" href="apple-touch-icon.png")
+      
+      // styles
       link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
       link(rel='stylesheet', href='/tether/css/tether.min.css')
       link(rel='stylesheet', href='/styles/style.css')
   body
     .layout
-      if error
-        div(role='alert').alert.alert-danger.alert-dismissible
-          button(type="button" data-dismiss="alert" aria-label="Close").close
-            span(aria-hidden="true") &times;
-          h1.alert-heading Error
-          p #{error}
+
+      // navbar
+      include includes/navbar.pug
+      
+      // alerts
+      include includes/alerts.pug
+
+      // content
       block content
+      
+      //scripts
       script(src='/jquery/jquery.min.js')
       script(src='/tether/js/tether.min.js')
       script(src='/bootstrap/js/bootstrap.min.js')
+      script(src='/moment/min/moment.min.js')
       script(src='/vue/vue.js')

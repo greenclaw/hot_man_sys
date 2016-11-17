@@ -6,8 +6,8 @@ import * as bodyParser from 'body-parser';
 import {join} from 'path';
 
 import index from './routes/index';
-import management from './routes/management';
-import administration from './routes/administration';
+import manage from './routes/manage';
+import admin from './routes/admin';
 
 import cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
 
@@ -19,7 +19,9 @@ const passport = require('passport')
 const passportLocal = require('passport-local')
 const LocalStrategy = passportLocal.Strategy
 
+// models and schemas
 import * as model from './model'
+import * as schemas from './models/schemas/schemas' 
 
 const app: express.Express = express();
 
@@ -47,12 +49,13 @@ app.use(passport.session());
 app.use(`/jquery`,    express.static(__dirname + '/../node_modules/jquery/dist/'))
 app.use(`/tether`,    express.static(__dirname + '/../node_modules/tether/dist/'))
 app.use(`/bootstrap`, express.static(__dirname + '/../node_modules/bootstrap/dist/'))
+app.use(`/moment`,    express.static(__dirname + '/../node_modules/moment/'))
 app.use(`/vue`,       express.static(__dirname + '/../node_modules/vue/dist/'))
 
 
 app.use('/', index);
-app.use('/management', management)
-app.use('/administration', administration);
+app.use('/manage', manage)
+app.use('/admin', admin);
 
 
 // catch 404 and forward to error handler
@@ -86,7 +89,7 @@ app.use((error: any, req, res, next) => {
     message: error.message,
     error: {}
   });
-  return null;
+  null;
 });
 
 passport.use('signup', new LocalStrategy({
@@ -95,28 +98,32 @@ passport.use('signup', new LocalStrategy({
     session: true,
     passReqToCallback : true
   },
-  (req, email: string, password: string, done) => {
-    model.guests.getOne('email', email, (err, guest: model.Guest) => {
+  (req: express.Request, email: string, password: string, done) => {
+    model.guests.selectOne('email', email, (err, guest: schemas.Guest) => {
       // in case of any error
       if (err) {
         console.log(`Guest signup error: ${err}`)
-        return done(err); 
+        return done(err, false, 
+            req.flash(`danger`, `Guest signup error: ${err}`)); 
       }
       // guest already exists
       if (guest) {
         console.log(`Guest ${email} already exists`)
-        return done(null, false, { message: `Guest ${email} already exists`})
+        return done(null, false, 
+            req.flash(`warning`, `Guest ${email} already exists`))
       }
       // create a new guest
-      model.guests.create(req.body as model.Guest, (err, guest: model.Guest) => {
+      model.guests.insert(req.body as schemas.Guest, (err, guest: schemas.Guest) => {
         // in case of any error
         if (err) {
           console.log(`Guest creation error: ${err}`)
-          return done(err)
+          return done(err, false, 
+              req.flash(`danger`, `Guest creation error: ${err}`))
         }
         // new guest created
-        console.log(`New guest created: ${guest}`)
-        return done(null, guest, { message: `New guest created: ${guest}`})
+        console.log(`New guest created: `, guest)
+        done(null, guest, 
+            req.flash(`success`, `New guest created: ${guest}`))
       })
     })
   }))
@@ -128,7 +135,7 @@ passport.use('login', new LocalStrategy({
     passReqToCallback : true
   },
   (req, email: string, password: string, done) => {
-    model.guests.getOne('email', email, (err, guest: model.Guest) => {
+    model.guests.selectOne('email', email, (err, guest: schemas.Guest) => {
       // in case of any error
       if (err) {
         console.log(`Guest login error: ${err}`)
@@ -146,20 +153,23 @@ passport.use('login', new LocalStrategy({
       }
       // correct password
       console.log(`Successful login for ${email}`)
-      return done(null, guest, { message: `Successful login for ${email}` });
+      done(null, guest, { message: `Successful login for ${email}` });
     })
   }))
 
-passport.serializeUser((guest: model.Guest, done) => {
-  return done(null, guest.id);
+passport.serializeUser((guest: schemas.Guest, done) => {
+  console.log(`Serializing guest ${guest.email}`)
+  done(null, guest.email);
 });
 
-passport.deserializeUser((id, done) => {
-  model.guests.getOne('id', id, (err, guest: model.Guest) => {
-    if (err) { 
+passport.deserializeUser((email, done) => {
+  model.guests.selectOne('email', email, (err, guest: schemas.Guest) => {
+    if (err) {
+      console.log(`Serializing error: ${err}`)
       return done(err);
     }
-    return done(null, guest);
+    console.log(`Deserializing guest ${email}`)
+    done(null, guest);
   });
 });
 

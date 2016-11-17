@@ -1,85 +1,90 @@
 /// <reference path="../../typings/index.d.ts" />
 "use strict";
-var express_1 = require('express');
-var index = express_1.Router();
-var passport = require('passport');
+const express_1 = require('express');
+const index = express_1.Router();
+const passport = require('passport');
+const model = require('../model');
+const renderWithAlerts = (req, res, view, options) => {
+    res.render(view, Object.assign({
+        danger: req.flash(`danger`),
+        warning: req.flash(`warning`),
+        info: req.flash(`info`),
+        success: req.flash(`success`)
+    }, options));
+};
 // GET home page
-index.get('/', function (req, res, next) {
-    res.render('index', {
-        guest: req.user
+index.get('/', (req, res, next) => {
+    model.hotels.selectAll((err, hotels) => {
+        renderWithAlerts(req, res, `index`, {
+            guest: req.user,
+            hotels: hotels,
+        });
     });
 });
 // GET login page
-index.get('/login', function (req, res, next) {
-    res.render('login', {
+index.get('/login', (req, res, next) => {
+    renderWithAlerts(req, res, `login`, {
         guest: req.user
     });
 });
 // Handle login POST
-index.post("/login", passport.authenticate("login", {
-    successRedirect: "/",
-    failureRedirect: "/login",
+index.post(`/login`, passport.authenticate(`login`, {
+    successRedirect: `/`,
+    failureRedirect: `/login`,
     failureFlash: true
-}), function (req, res, next) {
-    req.session.save(function (err) {
+}), (req, res, next) => {
+    req.session.save((err) => {
         if (err) {
-            console.log("Login error: " + err);
+            console.log(`Login error: ${err}`);
             return next(err);
         }
-        return res.redirect("/");
+        res.redirect(`/`);
     });
 });
 // GET signup page
-index.get('/signup', function (req, res, next) {
-    res.render('signup', {
+index.get('/signup', (req, res, next) => {
+    renderWithAlerts(req, res, `signup`, {
         guest: req.user
     });
 });
 // Handle signup POST
-index.post("/signup", passport.authenticate("signup", {
-    successRedirect: "/",
-    failureRedirect: "/signup",
+index.post(`/signup`, passport.authenticate(`signup`, {
+    successRedirect: `/`,
+    failureRedirect: `/signup`,
     failureFlash: true
-}), function (req, res, next) {
-    req.session.save(function (err) {
+}), (req, res, next) => {
+    req.session.save((err) => {
         if (err) {
-            console.log("Signup error: " + err);
+            console.log(`Signup error: ${err}`);
             return next(err);
         }
-        return res.redirect("/");
+        res.redirect(`/`);
     });
 });
-index.get("/logout", function (req, res, next) {
+// Hadle logging out
+index.get(`/logout`, (req, res, next) => {
     req.logout();
-    req.session.destroy(function (err) {
+    req.session.destroy((err) => {
         if (err) {
-            console.log("Logout error: " + err);
+            console.log(`Logout error: ${err}`);
             return next(err);
         }
-    });
-    req.session.save(function (err) {
-        if (err) {
-            return next(err);
-        }
-        return res.redirect('/');
+        res.redirect('/');
     });
 });
-/*
-index.get('/',
-  require('connect-ensure-login').ensureLoggedIn(),
-  function(req, res, next) {
-    console.log(req.user)
-    res.render('index', { guest: req.user });
-  });
-  */
-/*
-index.get(`/signup`, (req, res, next) => {
-  res.render(`signup`, {
-    guest: req.user
-  })
-})
-*/
-index.get('/ping', function (req, res) {
+// GET profile page
+index.get('/profile', (req, res, next) => {
+    renderWithAlerts(req, res, `profile`, {
+        guest: req.user
+    });
+});
+// GET reservations page
+index.get('/reservations', (req, res, next) => {
+    renderWithAlerts(req, res, `reservations`, {
+        guest: req.user
+    });
+});
+index.get('/ping', (req, res) => {
     res.status(200).send("pong");
 });
 Object.defineProperty(exports, "__esModule", { value: true });
