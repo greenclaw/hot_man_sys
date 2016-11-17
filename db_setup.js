@@ -26,6 +26,6 @@ shell.exec(`${prefix} -d hot_man_sys -c "\\COPY price(hotel_id,room_type_id,cost
 shell.exec(`${prefix} -d hot_man_sys -c "\\COPY managers(first_name,last_name,date_of_birth,username,user_password,email,phone,hotel_id,salary)   FROM '${__dirname}/db/managers.csv'        WITH DELIMITER ',' csv;"`)
 shell.exec(`${prefix} -d hot_man_sys -c "\\COPY staff(first_name,last_name,phone,date_of_birth,hotel_id,salary)   FROM '${__dirname}/db/staff.csv'        WITH DELIMITER ',' csv;"`)
 
-
+shell.exec(`${prefix} -d hot_man_sys < ${__dirname}/db/stored_procedures.sql`)
 
 shell.echo(`Finish!`)
