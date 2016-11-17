@@ -110,21 +110,21 @@ passport.use('login', new LocalStrategy({
         // in case of any error
         if (err) {
             console.log(`Guest login error: ${err}`);
-            return done(err);
+            return done(err, false, req.flash(`danger`, `Guest login error: ${err}`));
         }
         // no guest found
         if (!guest) {
             console.log(`No guest with email ${email}`);
-            return done(null, false, { message: `No guest with email ${email}` });
+            return done(null, false, req.flash(`warning`, `No guest with email ${email}`));
         }
         // incorrect password
         if (guest.guest_password != password) {
             console.log(`Incorrect password for ${email}`);
-            return done(null, false, { message: `Incorrect password for ${email}` });
+            return done(null, false, req.flash(`warning`, `Incorrect password for ${email}`));
         }
         // correct password
         console.log(`Successful login for ${email}`);
-        done(null, guest, { message: `Successful login for ${email}` });
+        done(null, guest, req.flash(`success`, `Successful login for ${email}`));
     });
 }));
 passport.serializeUser((guest, done) => {

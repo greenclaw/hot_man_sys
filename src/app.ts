@@ -103,27 +103,23 @@ passport.use('signup', new LocalStrategy({
       // in case of any error
       if (err) {
         console.log(`Guest signup error: ${err}`)
-        return done(err, false, 
-            req.flash(`danger`, `Guest signup error: ${err}`)); 
+        return done(err, false, req.flash(`danger`, `Guest signup error: ${err}`)); 
       }
       // guest already exists
       if (guest) {
         console.log(`Guest ${email} already exists`)
-        return done(null, false, 
-            req.flash(`warning`, `Guest ${email} already exists`))
+        return done(null, false, req.flash(`warning`, `Guest ${email} already exists`))
       }
       // create a new guest
       model.guests.insert(req.body as schemas.Guest, (err, guest: schemas.Guest) => {
         // in case of any error
         if (err) {
           console.log(`Guest creation error: ${err}`)
-          return done(err, false, 
-              req.flash(`danger`, `Guest creation error: ${err}`))
+          return done(err, false, req.flash(`danger`, `Guest creation error: ${err}`))
         }
         // new guest created
         console.log(`New guest created: `, guest)
-        done(null, guest, 
-            req.flash(`success`, `New guest created: ${guest}`))
+        done(null, guest, req.flash(`success`, `New guest created: ${guest}`))
       })
     })
   }))
@@ -134,26 +130,26 @@ passport.use('login', new LocalStrategy({
     session: true,
     passReqToCallback : true
   },
-  (req, email: string, password: string, done) => {
+  (req: express.Request, email: string, password: string, done) => {
     model.guests.selectOne('email', email, (err, guest: schemas.Guest) => {
       // in case of any error
       if (err) {
         console.log(`Guest login error: ${err}`)
-        return done(err); 
+        return done(err, false, req.flash(`danger`, `Guest login error: ${err}`)); 
       }
       // no guest found
       if (!guest) {
         console.log(`No guest with email ${email}`)
-        return done(null, false, { message: `No guest with email ${email}` }); 
+        return done(null, false, req.flash(`warning`, `No guest with email ${email}`)); 
       }
       // incorrect password
       if (guest.guest_password != password) {
         console.log(`Incorrect password for ${email}`)
-        return done(null, false, { message: `Incorrect password for ${email}` }); 
+        return done(null, false, req.flash(`warning`, `Incorrect password for ${email}`)); 
       }
       // correct password
       console.log(`Successful login for ${email}`)
-      done(null, guest, { message: `Successful login for ${email}` });
+      done(null, guest, req.flash(`success`, `Successful login for ${email}`));
     })
   }))
 

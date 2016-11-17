@@ -5,11 +5,38 @@ block content
   .index
     .container-fluid
       .row
-        .col-sm-12
-
+        .col-xs-12
           h1.display-1.text-xs-center.my-3 HotManSys
 
-          if hotels
+      .row
+        .col-md-8.offset-md-2
+          form
+            .form-group
+              .row.my-2
+                label(for='city').col-md-3.col-form-label.col-form-label-lg.text-md-right City
+                .col-md-6
+                  select(name="city").form-control-lg.form-control.custom-select#city
+                    each hotel in hotels
+                      option= hotel.city
+                  small.form-text.text-muted.text-md-center Destination City
+              .row.my-2
+                label(for='arrival_date').col-md-3.col-form-label.col-form-label-lg.text-md-right From
+                .col-md-6
+                  input(type='date' placeholder="From Date" name="arrival_date").form-control.form-control-lg#arrival_date
+                  small.form-text.text-muted.text-md-center Check-in Date
+              .row.my-2
+                label(for='departure_date').col-md-3.col-form-label.col-form-label-lg.text-md-right To
+                .col-md-6                    
+                  input(type='date' placeholder="To Date" name="departure_date").form-control.form-control-lg#departure_date
+                  small.form-text.text-muted.text-md-center Optional Check-out Date
+              .row.my-2
+                .col-md-6.offset-md-3
+                  input(type='submit' value='Search')#search.btn.btn-primary.btn-block.btn-lg
+        
+      if hotels
+        .row.mt-3
+          .col-xs-12
+            h1.my-3.text-xs-center.display-2 Hotels
             table.table.table-striped.table-bordered
               thead.thead-inverse
                 tr
@@ -24,11 +51,11 @@ block content
               tbody
                 each hotel in hotels
                   tr
-                      td.hotel_name.font-weight-bold= hotel.hotel_name
-                      td.stars_num=  hotel.star_num
-                      td.price_id=   hotel.price_id
-                      td.country=    hotel.country
-                      td.city=       hotel.city
-                      td.address=    hotel.address
-                      td.url=       hotel.url
-                      td.rating=     hotel.rating
+                    td.hotel_name.font-weight-bold= hotel.hotel_name
+                    td.stars_num=                   hotel.star_num
+                    td.price_id=                    hotel.price_id
+                    td.country=                     hotel.country
+                    td.city=                        hotel.city
+                    td.address=                     hotel.address
+                    td.url=                         hotel.url
+                    td.rating=                      hotel.rating
