@@ -14,4 +14,8 @@ block content
               dt.col-sm-4.capitalize= index.replace(`_`, ` `)
               dd.col-sm-8= val
         else
-          h2 You are not logged in. <a href="/login" title="Log In">Log In</a> or <a href="/signup" title="Sign Up">Sign Up</a>
+          p.display-4.my-3.text-xs-center You are not logged in
+          .row
+            .col-xs-4.offset-xs-4
+              hr 
+          p.display-4.my-3.text-xs-center <a href="/login" title="Log In">Log In</a> or <a href="/signup" title="Sign Up">Sign Up</a>                  

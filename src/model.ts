@@ -17,7 +17,7 @@ const pg = pgPromise({
 
 const qrm = pgPromise.queryResult
 
-import { Table, Guest, Hotel } from './models/schemas/schemas'
+import { Guest, Hotel } from './models/schemas/schemas'
 
 const guests = {
 
@@ -145,6 +145,33 @@ const guests = {
 }
 
 const hotels = {
+
+    selectCities: (done) => {
+        
+        console.log(pgPromise.as.format(`
+                SELECT UNIQUE city 
+                FROM hotels;`))
+
+        pg.any(`
+                SELECT UNIQUE city 
+                FROM hotels;`)
+            .then((cities) => {
+                if (cities) {
+                    console.log(`There are cities`)
+                    return done(null, cities)
+                }
+                console.log(`There are NO cities`)
+                return done(null, false)
+            })
+            .catch((err) => {
+                console.log(`Querying error: `, err)
+                return done(new Error(`Querying error: ${err}`))
+            })
+            .finally(() => {
+                // for immediate app exit, closing the connection pool.
+                pgPromise.end()
+            })
+    },
 
     selectAll: (done) => {
 

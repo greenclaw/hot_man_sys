@@ -15,9 +15,11 @@ block content
               .row.my-2
                 label(for='city').col-md-3.col-form-label.col-form-label-lg.text-md-right City
                 .col-md-6
-                  select(name="city").form-control-lg.form-control.custom-select#city
-                    each hotel in hotels
-                      option= hotel.city
+                  select(name="city").form-control-lg.form-control#city
+                    - let cities = hotels.map(hotel => hotel.city)
+                    - cities = Array.from(new Set(cities)).sort()
+                    each city in cities
+                      option= city
                   small.form-text.text-muted.text-md-center Destination City
               .row.my-2
                 label(for='arrival_date').col-md-3.col-form-label.col-form-label-lg.text-md-right From
