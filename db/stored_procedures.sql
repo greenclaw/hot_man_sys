@@ -6,6 +6,33 @@
 --END;
 --$$ LANGUAGE plpgsql;
 
+create or replace function update_budget()
+returns trigger as $update_budget$
+BEGIN
+	update hotels
+	set budget = budget + (select sum(ps.coast) 
+		from rooms as r,
+		     rooms_types as rt, 
+		     hotels as h, 
+		     reservations as rs, 
+		     prices as ps
+		where rs.id = old.id and
+		      r.hotel_id = h.id and
+		      r.room_type=rt.id and
+		      r.id = rs.room_id and
+		      ps.hotel_id = h.id and
+		      ps.room_type_id= rt.id and
+		      rs.reserve_status = 'Paid');
+END;
+$update_budget$ 
+LANGUAGE plpgsql;
+
+create trigger compute_new_budget
+AFTER DELETE ON reservations
+FOR EACH ROW
+EXECUTE PROCEDURE update_budget();
+
+	  
 
 create or replace function reserve_room(room_id integer, guest_id integer, arrive varchar, dep varchar)
 returns boolean as $$
@@ -80,7 +107,7 @@ BEGIN
 		ELSE 	IF TG_NAME='update_room_reservation' THEN
 			   IF ( OLD.reserve_status <> 'Paid' 
 				AND NEW.reserve_status = 'Paid') THEN
-				status_var := 'Successful';
+				status_var := 'Paid';
 			   ELSE
 				status_var := OLD.reservation_status;
 			   END IF;
@@ -122,4 +149,6 @@ CREATE TRIGGER update_room_reservation
 BEFORE UPDATE ON reservations
 FOR EACH ROW
 EXECUTE PROCEDURE event_to_log();
+
+
 

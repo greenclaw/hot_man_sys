@@ -17,18 +17,19 @@ CREATE TABLE if not exists people (
 	last_name VARCHAR(50) NOT NULL,
 	date_of_birth DATE,
 	phone VARCHAR(12),
-	CONSTRAINT pk_users PRIMARY KEY (id)
+	CONSTRAINT pk_people PRIMARY KEY (id)
 );
 
 CREATE TABLE if not exists users (
 	username VARCHAR(50) UNIQUE NOT NULL ,
 	email VARCHAR(50) CONSTRAINT email_must_unique UNIQUE NOT NULL,
 	user_password VARCHAR(30) NOT NULL,
-	CONSTRAINT pk_accounts PRIMARY KEY (id)
+	CONSTRAINT pk_users PRIMARY KEY (id)
 ) INHERITS (people);
 
 CREATE TABLE if not exists guests (
 	payments VARCHAR,
+	CONSTRAINT pk_guests PRIMARY KEY (id)
 ) INHERITS (users);
 
 
@@ -54,15 +55,14 @@ CREATE TABLE if not exists staff(
 
 
 CREATE TABLE if not exists managers (
-	phone_number VARCHAR(12),
 	CONSTRAINT pk_managers PRIMARY KEY (id)
 ) INHERITS (staff, users);
 
 CREATE TABLE if not exists owners (
 	CONSTRAINT pk_owners PRIMARY KEY(id)
-) INHERITS (accounts);
+) INHERITS (users);
 
-CREATE TABLE if not exists owners_hotels (
+CREATE TABLE if not exists hotels_owners (
 	hotel_id INTEGER REFERENCES hotels,
 	owner_id INTEGER REFERENCES owners,
 	CONSTRAINT pk_owners_hotels PRIMARY KEY(hotel_id, owner_id)
@@ -79,7 +79,7 @@ CREATE TABLE if not exists rooms_types(
 CREATE TABLE if not exists prices ( 
 	hotel_id INTEGER REFERENCES hotels ON DELETE CASCADE,
 	room_type_id INTEGER REFERENCES rooms_types ON DELETE RESTRICT,
-	coast MONEY NOT NULL,
+	cost MONEY NOT NULL,
 	CONSTRAINT pk_prices PRIMARY KEY (hotel_id, room_type_id)
 );
 
