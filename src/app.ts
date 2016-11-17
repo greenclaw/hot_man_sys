@@ -94,7 +94,7 @@ app.use((error: any, req, res, next) => {
 
 passport.use('signup', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'guest_password',
+    passwordField: 'user_password',
     session: true,
     passReqToCallback : true
   },
@@ -126,7 +126,7 @@ passport.use('signup', new LocalStrategy({
 
 passport.use('login', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'guest_password',
+    passwordField: 'user_password',
     session: true,
     passReqToCallback : true
   },
@@ -143,7 +143,7 @@ passport.use('login', new LocalStrategy({
         return done(null, false, req.flash(`warning`, `No guest with email ${email}`)); 
       }
       // incorrect password
-      if (guest.guest_password != password) {
+      if (guest.user_password != password) {
         console.log(`Incorrect password for ${email}`)
         return done(null, false, req.flash(`warning`, `Incorrect password for ${email}`)); 
       }

@@ -14,7 +14,7 @@ export interface Guest extends User {
 }
 
 export interface User extends Person {
-    username: string,
+    username?: string,
     email: string,
     user_password: string
 }

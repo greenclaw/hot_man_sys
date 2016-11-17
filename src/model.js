@@ -94,14 +94,12 @@ const guests = {
         });
     },
     insert: (guest, done) => {
-        let key = `id`;
-        let keyValue = guest.id;
         console.log(pgPromise.as.format(`
                 INSERT INTO guests ($<this~>) 
-                VALUES ($<first_name>, $<last_name>, $<email>, $<guest_password>);`, guest));
+                VALUES ($<first_name>, $<last_name>, $<email>, $<user_password>);`, guest));
         pg.none(`
                 INSERT INTO guests ($<this~>) 
-                VALUES ($<first_name>, $<last_name>, $<email>, $<guest_password>);`, guest)
+                VALUES ($<first_name>, $<last_name>, $<email>, $<user_password>);`, guest)
             .then(() => {
             console.log(`Successful inserting of ${guest}`);
             return done(null, guest);
