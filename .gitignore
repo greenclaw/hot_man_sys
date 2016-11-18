@@ -5,6 +5,7 @@ node_modules
 logs
 *.log
 
+.idea
 # Runtime data
 pids
 *.pid

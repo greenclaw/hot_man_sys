@@ -1,4 +1,4 @@
-﻿DROP table if exists logs;
+﻿﻿DROP table if exists logs;
 DROP table if exists reservations;
 DROP table if exists rooms;
 drop table if exists prices;
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS people (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-	username VARCHAR(50) UNIQUE,
+	username VARCHAR(50) UNIQUE NOT NULL ,
 	email VARCHAR(50) CONSTRAINT email_must_unique UNIQUE NOT NULL,
 	user_password VARCHAR(30) NOT NULL,
 	CONSTRAINT pk_users PRIMARY KEY (id)
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS room_types (
 	CONSTRAINT pk_room_types PRIMARY KEY(id)
 );
 
-CREATE TABLE IF NOT EXISTS prices ( 
+CREATE TABLE IF NOT EXISTS price ( 
 	hotel_id INTEGER REFERENCES hotels ON DELETE CASCADE,
 	room_type_id INTEGER REFERENCES room_types ON DELETE RESTRICT,
 	cost MONEY NOT NULL,
@@ -117,6 +117,40 @@ CREATE TABLE IF NOT EXISTS logs (
 	CONSTRAINT pk_logs PRIMARY KEY(id)
 );
 
+CREATE VIEW all_hotels AS
+	SELECT hotel_name, star_num, city, country, address, url, rating
+	FROM hotels;
 
 
+CREATE OR REPLACE VIEW the_best_hotels AS
+	SELECT hotel_name, star_num, city, country, address, url, rating
+	FROM hotels
+	ORDER BY star_num desc, rating desc;
 
+CREATE OR REPLACE VIEW hotels_price AS 
+	SELECT h.hotel_name, h.star_num, rt.class_name as type, ps.cost
+	from room_types as rt, 
+	     hotels as h, 
+             price as ps
+	where 
+	      ps.hotel_id = h.id and
+	      ps.room_type_id= rt.id
+	order by star_num desc;
+
+CREATE OR REPLACE VIEW all_rooms AS 
+	SELECT  h.hotel_name, h.star_num, r.num, rt.class_name as room_type,r.floor, rt.capacity, rt.bed_num, ps.cost
+	from room_types as rt, 
+	     hotels as h, 
+             price as ps,
+             rooms as r
+	where 
+	      ps.hotel_id = h.id and
+	      ps.room_type_id= rt.id and
+	      r.hotel_id = h.id and
+	      rt.id = r.room_type
+	order by star_num desc, rt.id asc;
+
+CREATE OR REPLACE VIEW all_users AS 
+	SELECT first_name, last_name, date_of_birth, phone, username, email, user_password
+	from users;
+	
