@@ -5,6 +5,8 @@ node_modules
 logs
 *.log
 
+db/dump.sql
+
 .idea
 # Runtime data
 pids

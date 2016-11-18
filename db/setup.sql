@@ -59,6 +59,10 @@ CREATE TABLE IF NOT EXISTS managers (
 	CONSTRAINT pk_managers PRIMARY KEY (id)
 ) INHERITS (staff, users);
 
+CREATE TABLE IF NOT EXISTS admins (
+	CONSTRAINT pk_admins PRIMARY KEY (id)
+) INHERITS (users);
+
 CREATE TABLE IF NOT EXISTS owners (
 	CONSTRAINT pk_owners PRIMARY KEY(id)
 ) INHERITS (users);
