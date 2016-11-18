@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS owners (
 CREATE TABLE IF NOT EXISTS hotel_owners (
 	hotel_id INTEGER REFERENCES hotels,
 	owner_id INTEGER REFERENCES owners,
-	CONSTRAINT pk_owners_hotels PRIMARY KEY(hotel_id, owner_id)
+	CONSTRAINT pk_hotel_owners PRIMARY KEY(hotel_id, owner_id)
 );
 
 CREATE TABLE IF NOT EXISTS room_types (
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS rooms (
 	id SERIAL,
 	num INTEGER NOT NULL CHECK(num > 0),
 	hotel_id INTEGER REFERENCES hotels ON DELETE CASCADE,
-	room_type INTEGER REFERENCES room_types ON DELETE RESTRICT,
+	room_type_id INTEGER REFERENCES room_types ON DELETE RESTRICT,
 	floor NUMERIC(3,0),
 	CONSTRAINT pk_rooms PRIMARY KEY(id)
 );
@@ -137,18 +137,40 @@ CREATE OR REPLACE VIEW hotels_price AS
 	      ps.room_type_id= rt.id
 	order by star_num desc;
 
+
 CREATE OR REPLACE VIEW all_rooms AS 
-	SELECT  h.hotel_name, h.star_num, r.num, rt.class_name as room_type,r.floor, rt.capacity, rt.bed_num, ps.cost
-	from room_types as rt, 
-	     hotels as h, 
-             price as ps,
-             rooms as r
-	where 
-	      ps.hotel_id = h.id and
-	      ps.room_type_id= rt.id and
-	      r.hotel_id = h.id and
-	      rt.id = r.room_type
-	order by star_num desc, rt.id asc;
+	SELECT  r.id,
+		h.hotel_name,
+		r.floor,
+		rt.capacity, 
+		rt.bed_num, 
+		h.star_num, 
+		r.num, 
+		rt.class_name,
+		p.cost
+	from  hotels as h,
+		rooms as r,
+		price as p,
+		room_types as rt
+	where h.id = r.hotel_id and 
+	      h.id = p.hotel_id and
+	      r.room_type_id = rt.id and
+	      p.room_type_id = rt.id;
+	      
+CREATE OR REPLACE VIEW reserved_rooms AS 
+	SELECT
+		r.hotel_name,
+		r.floor,
+		r.capacity, 
+		r.bed_num, 
+		r.star_num, 
+		r.num, 
+		r.class_name,
+		r.cost,
+		rs.*
+	from  all_rooms as r,
+		reservations as rs
+	where r.id = rs.room_id;
 
 CREATE OR REPLACE VIEW all_users AS 
 	SELECT first_name, last_name, date_of_birth, phone, username, email, user_password

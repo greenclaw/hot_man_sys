@@ -1,19 +1,13 @@
 ﻿-- returns hotels and their rooms not reserved at with moment
 select *
-from rooms, room_types, price, hotels
-where rooms.hotel_id = hotels.id and
-      room_types.id = rooms.room_type and
-      price.hotel_id = hotels.id and
-      room_types.id = price.room_type_id and
-     rooms.id not in (           
-select distinct r.id
-from rooms as r, room_types as rt, hotels as h, reservations as rs
-where 
-      r.hotel_id = h.id and
-      r.room_type=rt.id and
-      r.id = rs.room_id and
-      (daterange(date '2016-11-10',date '2016-11-30') * 
-       daterange(rs.arrival_date,rs.departure_date)) <> 'empty')
+from rooms as r, room_types as rt, price as p, hotels as h, reservations as rs
+where r.hotel_id = h.id and
+      rt.id = r.room_type_id and
+      p.hotel_id = h.id and
+      rt.id = p.room_type_id and
+      rs.room_id = r.id and
+      not ((rs.arrival_date <= date '2016-11-30') 
+      and (rs.departure_date >= date '2016-11-10'))
       -- and CURRENT_TIMESTAMP > CURRENT_TIMESTAMP ;
 
 

@@ -1,6 +1,4 @@
-﻿﻿
--- hotel id searching
-CREATE UNIQUE INDEX primary_hotel
+﻿CREATE UNIQUE INDEX primary_hotel
   ON public.hotels
   USING btree
   (id);
@@ -43,6 +41,8 @@ CREATE INDEX room_id_index
   USING btree
   (room_id);
 
+create index arrival_departure_index on reservations(arrival_date, departure_date);
+
 -- log searching
 CREATE UNIQUE INDEX primary_log
    ON public.logs USING btree (id ASC);
@@ -51,10 +51,42 @@ ALTER TABLE public.logs
 
  CREATE INDEX log_searching
    ON public.logs USING btree
-   (log_status ASC, log_time ASC );
+   (log_time ASC);
 
-   
+create or replace function guest_reservations(integer)
+RETURNS SETOF reserved_rooms AS $$
+	select *
+        from reserved_rooms
+	where guest_id = $1;
+$$ LANGUAGE SQL;
 
+
+create or replace function free_rooms(varchar,varchar,out id int,
+	out hotel_name varchar,
+	out floor numeric(3),
+	out capacity numeric(1), 
+	out bed_num numeric(1), 
+	out star_num numeric(2,1), 
+	out num int, 
+	out class_name varchar,
+	out cost money)
+RETURNS SETOF record AS $$
+select  r.id,
+	r.hotel_name,
+	r.floor,
+	r.capacity, 
+	r.bed_num, 
+	r.star_num, 
+	r.num, 
+	r.class_name,
+	r.cost
+from reserved_rooms as r
+where not ((r.arrival_date <= $2::date) 
+      	and (r.departure_date >= $1::date))
+$$ LANGUAGE SQL;
+
+
+create index arrival_departure_log_index on logs(arrival_date, departure_date);
 
 -- calculating budget and executes by after delete trigger on reservations
 create or replace function update_budget()
