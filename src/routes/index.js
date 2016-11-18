@@ -17,8 +17,9 @@ exports.renderWithAlerts = renderWithAlerts;
 index.get('/', function (req, res, next) {
     model.selectAll("hotels", function (err, hotels) {
         renderWithAlerts(req, res, "index", {
+            title: "(\u3063\u25D5\u203F\u25D5)\u3063 HotManSys",
             guest: req.user,
-            hotels: hotels,
+            hotels: hotels
         });
     });
 });

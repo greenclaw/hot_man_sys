@@ -19,7 +19,7 @@ management.get('/', (req, res, next) => {
 				(req.user as schemas.Manager).hotel_id, (err, hotels: schemas.Hotel[]) => {
     	renderWithAlerts(req, res, `management`, {
       	manager: req.user,
-      	hotels,
+      	hotels
     	})
   	})
 	}

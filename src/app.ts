@@ -74,7 +74,7 @@ app.use('/administration', administration);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  var err = new Error('Not Found');
+  var err = new Error(`Not Found  (╯°□°）╯︵ ┻━┻`);
   err['status'] = 404;
   next(err);
 });
@@ -113,7 +113,7 @@ passport.use('signup', new LocalStrategy({
     passReqToCallback : true
   },
   (req: express.Request, email: string, password: string, done) => {
-    model.guests.selectOne('email', email, (err, guest: schemas.Guest) => {
+    model.selectOne(`guests`, 'email', email, (err, guest: schemas.Guest) => {
       // in case of any error
       if (err) {
         console.log(`Guest signup error: ${err}`)
@@ -275,10 +275,10 @@ passport.use('administration-login', new LocalStrategy({
 
 passport.serializeUser((user: schemas.User, done) => {
   console.log(`Serializing user ${user.email}`)
-  done(null, user.email);
+  done(null, user);
 });
 
-passport.deserializeUser((user, done) => {
+passport.deserializeUser((user: schemas.User, done) => {
   model.selectOne(`users`, 'email', user.email, (err, user: schemas.User) => {
     if (err) {
       console.log(`Serializing error: `, err)

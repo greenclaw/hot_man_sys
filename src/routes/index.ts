@@ -27,8 +27,9 @@ export function renderWithAlerts(req: express.Request, res: express.Response,
 index.get('/', (req, res, next) => {
   model.selectAll(`hotels`, (err, hotels: schemas.Hotel[]) => {
     renderWithAlerts(req, res, `index`, {
+      title: `(っ◕‿◕)っ HotManSys`,
       guest: req.user,
-      hotels,
+      hotels
     })
   })
 });

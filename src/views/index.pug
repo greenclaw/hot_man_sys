@@ -6,7 +6,11 @@ block content
     .container-fluid
       .row
         .col-xs-12
-          h1.display-1.text-xs-center.my-3 HotManSys
+          h1.display-1.text-xs-center.my-3 
+            if title
+              span= title
+            else
+              span HotManSys
 
       if hotels
         .row
@@ -15,28 +19,23 @@ block content
               .form-group
                 .row.my-2
                   label(for='city').col-md-3.col-form-label.col-form-label-lg.text-md-right City
-                  .col-md-6
-                    select(name="city").form-control-lg.form-control#city
-                      - let cities = hotels.map(hotel => hotel.city)
-                      - cities = Array.from(new Set(cities)).sort()
-                      each city in cities
-                        option= city
+                  .col-md-6.ui-weight
+                    input(type='text' name="city").form-control-lg.form-control#city
                     small.form-text.text-muted.text-md-center Destination City
                 .row.my-2
                   label(for='arrival_date').col-md-3.col-form-label.col-form-label-lg.text-md-right From
-                  .col-md-6
+                  .col-md-6.ui-weight
                     input(type='date' placeholder="From Date" name="arrival_date").form-control.form-control-lg#arrival_date
                     small.form-text.text-muted.text-md-center Check-in Date
                 .row.my-2
                   label(for='departure_date').col-md-3.col-form-label.col-form-label-lg.text-md-right To
-                  .col-md-6                    
+                  .col-md-6.ui-weight                   
                     input(type='date' placeholder="To Date" name="departure_date").form-control.form-control-lg#departure_date
                     small.form-text.text-muted.text-md-center Optional Check-out Date
                 .row.my-2
                   .col-md-6.offset-md-3
                     input(type='submit' value='Search')#search.btn.btn-primary.btn-block.btn-lg
       
-      - if (roomReserves) console.log(`Num of avail. rooms: `, roomReservs.length)
       if roomReservs
         .row.my-3
           .col-xs-12
@@ -57,22 +56,22 @@ block content
               tbody
                 each roomRes in roomReservs
                   tr
-                    th.hotel_name.font-weight-bold=  roomRes.hotel_name
-                    th.room=                         roomRes.num
-                    th.price_id=                     roomRes.price_id
-                    th.address=                      roomRes.address
-                    th.site=                         roomRes.url
-                    th.rating=                       roomRes.rating
-                    th.room_type=                    roomRes.room_type
-                    th.bed_num=                      roomRes.bed_num
-                    th.floor=                        roomRes.floor
-                    th.capacity=                     roomRes.capacity
+                    td.hotel_name.font-weight-bold=  roomRes.hotel_name
+                    td.room=                         roomRes.num
+                    td.price_id=                     roomRes.price_id
+                    td.address=                      roomRes.address
+                    td.site=                         roomRes.url
+                    td.rating=                       roomRes.rating
+                    td.room_type=                    roomRes.room_type
+                    td.bed_num=                      roomRes.bed_num
+                    td.floor=                        roomRes.floor
+                    td.capacity=                     roomRes.capacity
 
       if hotels
         .row.mt-3
           .col-xs-12
-            h1.my-3.text-xs-center.display-2 Hotels
-            table.table.table-striped.table-bordered
+            h1.my-3.text-xs-center.display-2 Featured Hotels
+            table.table.table-striped.table-bordered#hotels
               thead.thead-inverse
                 tr
                   th.hotel_name Hotel
@@ -81,16 +80,15 @@ block content
                   th.country    Country
                   th.city       City
                   th.address    Address
-                  th.site       Site
                   th.rating     Rating
               tbody
                 each hotel in hotels
                   tr
-                    td.hotel_name.font-weight-bold= hotel.hotel_name
-                    td.stars_num=                   hotel.star_num
-                    td.price_id=                    hotel.price_id
-                    td.country=                     hotel.country
-                    td.city=                        hotel.city
-                    td.address=                     hotel.address
-                    td.url=                         hotel.url
-                    td.rating=                      hotel.rating
+                    td.hotel_name.font-weight-bold
+                      a(href=hotel.url title=hotel.hotel_name)= hotel.hotel_name
+                    td.stars_num= hotel.star_num
+                    td.price_id=  hotel.price_id
+                    td.country=   hotel.country
+                    td.city=      hotel.city
+                    td.address=   hotel.address
+                    td.rating=    hotel.rating

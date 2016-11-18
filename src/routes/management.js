@@ -12,7 +12,7 @@ management.get('/', function (req, res, next) {
         return model.selectOne("hotels", "hotel_id", req.user.hotel_id, function (err, hotels) {
             index_1.renderWithAlerts(req, res, "management", {
                 manager: req.user,
-                hotels: hotels,
+                hotels: hotels
             });
         });
     }

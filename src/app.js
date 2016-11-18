@@ -55,7 +55,7 @@ app.use('/management', management_1.default);
 app.use('/administration', administration_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    var err = new Error('Not Found');
+    var err = new Error("Not Found  (\u256F\u00B0\u25A1\u00B0\uFF09\u256F\uFE35 \u253B\u2501\u253B");
     err['status'] = 404;
     next(err);
 });
@@ -88,7 +88,7 @@ passport.use('signup', new LocalStrategy({
     session: true,
     passReqToCallback: true
 }, function (req, email, password, done) {
-    model.guests.selectOne('email', email, function (err, guest) {
+    model.selectOne("guests", 'email', email, function (err, guest) {
         // in case of any error
         if (err) {
             console.log("Guest signup error: " + err);
@@ -235,7 +235,7 @@ passport.use('administration-login', new LocalStrategy({
 }));
 passport.serializeUser(function (user, done) {
     console.log("Serializing user " + user.email);
-    done(null, user.email);
+    done(null, user);
 });
 passport.deserializeUser(function (user, done) {
     model.selectOne("users", 'email', user.email, function (err, user) {

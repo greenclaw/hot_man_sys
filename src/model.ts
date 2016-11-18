@@ -185,7 +185,7 @@ export function update(tableName: string, key: string,
     .then(() => {
       console.log(`
           Successful update of ${attr} to ${attrValue} 
-          of guest with ${key} ${keyValue}`)
+          of tuples with ${key} ${keyValue}`)
       return done(null, true)
     })
     .cathc((err) => {
@@ -225,4 +225,4 @@ export function insert(tableName, attrs: string[], vals: Array<number | string> 
     });
 }
 
-export { guests, hotels }
+export { hotels }

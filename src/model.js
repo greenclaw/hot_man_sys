@@ -115,7 +115,7 @@ exports.selectAll = selectAll;
 function update(tableName, key, keyValue, attr, attrValue, done) {
     pg.none("\n      UPDATE $<tableName^> \n      SET    $<attr^> = $<attrValue> \n      WHERE  $<key^>  = $<keyValue>;", { tableName: tableName, key: key, keyValue: keyValue, attr: attr, attrValue: attrValue })
         .then(function () {
-        console.log("\n          Successful update of " + attr + " to " + attrValue + " \n          of guest with " + key + " " + keyValue);
+        console.log("\n          Successful update of " + attr + " to " + attrValue + " \n          of tuples with " + key + " " + keyValue);
         return done(null, true);
     })
         .cathc(function (err) {
