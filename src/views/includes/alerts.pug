@@ -1,8 +1,8 @@
 if danger || warning || info || success
 	if danger.length > 0 || warning.length > 0 || info.length > 0 || success.length > 0
-		.container-fluid
+		.container-fluid.my-2
 			.row
-				.col-xs-6.offset-xs-3.pt-1
+				.col-xs-6.offset-xs-3
 					if danger.length > 0
 						div(role='alert').alert.alert-danger.alert-dismissible.fade.in
 							button(type="button" data-dismiss="alert" aria-label="Close").close

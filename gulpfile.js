@@ -65,15 +65,9 @@ gulp.task('nodemon', function (cb) {
 var tsConfigSrc = tsb.create('src/tsconfig.json');
 gulp.task('build', function () {
     
-    let server = gulp.src(['typings/**/*.ts', 'src/**/*.ts'])
+    return gulp.src(['typings/**/*.ts', 'src/**/*.ts'])
         .pipe(tsConfigSrc()) 
         .pipe(gulp.dest('src'));
-    
-    let client = gulp.src(['typings/**/*.ts', 'src/scripts/**/*.ts'])
-        .pipe(tsConfigSrc())
-        .pipe(gulp.dest('src/public/scripts'));
-
-    return merge(server, client)
 });
 
 // TypeScript build for /tests folder, pipes in .d.ts files from typings folder

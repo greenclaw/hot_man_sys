@@ -1,3 +1,4 @@
+/// <reference path="globals/bcryptjs/index.d.ts" />
 /// <reference path="globals/body-parser/index.d.ts" />
 /// <reference path="globals/connect-flash/index.d.ts" />
 /// <reference path="globals/cookie-parser/index.d.ts" />

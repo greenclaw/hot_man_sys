@@ -5,14 +5,15 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var path_1 = require('path');
 var index_1 = require('./routes/index');
-var manage_1 = require('./routes/manage');
-var admin_1 = require('./routes/admin');
+var management_1 = require('./routes/management');
+var administration_1 = require('./routes/administration');
 var cookieParser = require('cookie-parser'); // this module doesn't use the ES6 default export yet
 var favicon = require('serve-favicon');
 var connectFlash = require('connect-flash');
 var passport = require('passport');
 var passportLocal = require('passport-local');
 var LocalStrategy = passportLocal.Strategy;
+var bcrypt = require('bcryptjs');
 // const expressVue =  require('express-vue')
 // models and schemas
 var model = require('./model');
@@ -50,8 +51,8 @@ app.use("/moment", express.static(__dirname + '/../node_modules/moment/'));
 app.use("/vue", express.static(__dirname + '/../node_modules/vue/dist/'));
 app.use("/vue-material", express.static(__dirname + '/../node_modules/vue-material/dist/'));
 app.use('/', index_1.default);
-app.use('/manage', manage_1.default);
-app.use('/admin', admin_1.default);
+app.use('/management', management_1.default);
+app.use('/administration', administration_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
@@ -98,16 +99,29 @@ passport.use('signup', new LocalStrategy({
             console.log("Guest " + email + " already exists");
             return done(null, false, req.flash("warning", "Guest " + email + " already exists"));
         }
+        // salting and hashig password
+        req.body.user_password =
+            bcrypt.hashSync(req.body.user_password, bcrypt.genSaltSync());
         // create a new guest
-        model.guests.insert(req.body, function (err, guest) {
+        model.insert("guests", [
+            "first_name",
+            "last_name",
+            "email",
+            "user_password"
+        ], [
+            req.body.first_name,
+            req.body.last_name,
+            req.body.email,
+            req.body.user_password
+        ], function (err, isOk) {
             // in case of any error
             if (err) {
-                console.log("Guest creation error: " + err);
+                console.log("Guest creation error: ", err);
                 return done(err, false, req.flash("danger", "Guest creation error: " + err));
             }
             // new guest created
-            console.log("New guest created: ", guest);
-            done(null, guest, req.flash("success", "New guest created: " + guest));
+            console.log("New guest created: ", req.body);
+            done(null, req.body, req.flash("success", "Welcome, " + req.body.first_name + " " + req.body.last_name + "!"));
         });
     });
 }));
@@ -117,39 +131,120 @@ passport.use('login', new LocalStrategy({
     session: true,
     passReqToCallback: true
 }, function (req, email, password, done) {
-    model.guests.selectOne('email', email, function (err, guest) {
+    model.selectOne("guests", 'email', email, function (err, user) {
         // in case of any error
         if (err) {
-            console.log("Guest login error: " + err);
-            return done(err, false, req.flash("danger", "Guest login error: " + err));
+            console.log("User login error: " + err);
+            return done(err, false, req.flash("danger", "User login error: " + err));
         }
         // no guest found
-        if (!guest) {
-            console.log("No guest with email " + email);
-            return done(null, false, req.flash("warning", "No guest with email " + email));
+        if (!user) {
+            console.log("No user with email " + email);
+            return done(null, false, req.flash("warning", "No user with email " + email));
         }
         // incorrect password
-        if (guest.user_password != password) {
+        if (!bcrypt.compareSync(password, user.user_password)) {
             console.log("Incorrect password for " + email);
             return done(null, false, req.flash("warning", "Incorrect password for " + email));
         }
         // correct password
         console.log("Successful login for " + email);
-        done(null, guest, req.flash("success", "Successful login for " + email));
+        done(null, user, req.flash("success", "Successful login for " + email));
     });
 }));
-passport.serializeUser(function (guest, done) {
-    console.log("Serializing guest " + guest.email);
-    done(null, guest.email);
-});
-passport.deserializeUser(function (email, done) {
-    model.guests.selectOne('email', email, function (err, guest) {
+passport.use('management-login', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'user_password',
+    session: true,
+    passReqToCallback: true
+}, function (req, email, password, done) {
+    model.selectOne("managers", 'email', email, function (err, user) {
+        // in case of any error
         if (err) {
-            console.log("Serializing error: " + err);
+            console.log("User login error: " + err);
+            return done(err, false, req.flash("danger", "User login error: " + err));
+        }
+        // no guest found
+        if (!user) {
+            console.log("No user with email " + email);
+            return done(null, false, req.flash("warning", "No user with email " + email));
+        }
+        // incorrect password
+        if (!bcrypt.compareSync(password, user.user_password)) {
+            console.log("Incorrect password for " + email);
+            return done(null, false, req.flash("warning", "Incorrect password for " + email));
+        }
+        // correct password
+        console.log("Successful login for " + email);
+        done(null, user, req.flash("success", "Successful login for " + email));
+    });
+}));
+passport.use('ownership-login', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'user_password',
+    session: true,
+    passReqToCallback: true
+}, function (req, email, password, done) {
+    model.selectOne("hotel_owners", 'email', email, function (err, user) {
+        // in case of any error
+        if (err) {
+            console.log("User login error: " + err);
+            return done(err, false, req.flash("danger", "User login error: " + err));
+        }
+        // no guest found
+        if (!user) {
+            console.log("No user with email " + email);
+            return done(null, false, req.flash("warning", "No user with email " + email));
+        }
+        // incorrect password
+        if (!bcrypt.compareSync(password, user.user_password)) {
+            console.log("Incorrect password for " + email);
+            return done(null, false, req.flash("warning", "Incorrect password for " + email));
+        }
+        // correct password
+        console.log("Successful login for " + email);
+        done(null, user, req.flash("success", "Successful login for " + email));
+    });
+}));
+passport.use('administration-login', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'user_password',
+    session: true,
+    passReqToCallback: true
+}, function (req, email, password, done) {
+    model.selectOne("hotel_owners", 'email', email, function (err, user) {
+        // in case of any error
+        if (err) {
+            console.log("User login error: " + err);
+            return done(err, false, req.flash("danger", "User login error: " + err));
+        }
+        // no guest found
+        if (!user) {
+            console.log("No user with email " + email);
+            return done(null, false, req.flash("warning", "No user with email " + email));
+        }
+        // incorrect password
+        if (!bcrypt.compareSync(password, user.user_password)) {
+            console.log("Incorrect password for " + email);
+            return done(null, false, req.flash("warning", "Incorrect password for " + email));
+        }
+        // correct password
+        console.log("Successful login for " + email);
+        done(null, user, req.flash("success", "Successful login for " + email));
+    });
+}));
+passport.serializeUser(function (user, done) {
+    console.log("Serializing user " + user.email);
+    done(null, user.email);
+});
+passport.deserializeUser(function (user, done) {
+    model.selectOne("users", 'email', user.email, function (err, user) {
+        if (err) {
+            console.log("Serializing error: ", err);
             return done(err);
         }
-        console.log("Deserializing guest " + email);
-        done(null, guest);
+        console.log("Deserializing user " + user.email);
+        done(null, user);
     });
 });
 Object.defineProperty(exports, "__esModule", { value: true });

@@ -1,6 +1,7 @@
 {
   "name": "hot_man_sys",
   "globalDependencies": {
+    "bcryptjs": "registry:dt/bcryptjs#2.3.0+20151217030501",
     "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
     "connect-flash": "registry:dt/connect-flash#0.0.0+20160317120654",
     "cookie-parser": "github:DefinitelyTyped/DefinitelyTyped/cookie-parser/cookie-parser.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",

@@ -40,7 +40,7 @@ export interface Hotel extends Table {
     budget: number
 }
 
-export interface HotelOwner {
+export interface HotelOwner extends User {
     hotel_id: number,
     owner_id: number
 }

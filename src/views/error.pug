@@ -1,9 +1,10 @@
 extends layout
 
 block content
-   .container-fluid
+   .container-fluid.my-3
     .row
-      .col-sm-12
-        h1= message
-        h2= error.status
-        pre #{error.stack}
+      .col-xl-10.offset-xl-1
+        h1.display-3.mb-2(style='word-wrap: break-word')= message
+        h2.display-4.mb-2= error.status
+        pre.bg-faded.rounded.px-2.py-2
+          code #{error.stack}

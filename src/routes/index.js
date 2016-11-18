@@ -4,17 +4,18 @@ var express_1 = require('express');
 var index = express_1.Router();
 var passport = require('passport');
 var model = require('../model');
-var renderWithAlerts = function (req, res, view, options) {
+function renderWithAlerts(req, res, view, options) {
     res.render(view, Object.assign({
         danger: req.flash("danger"),
         warning: req.flash("warning"),
         info: req.flash("info"),
         success: req.flash("success")
     }, options));
-};
+}
+exports.renderWithAlerts = renderWithAlerts;
 // GET index page
 index.get('/', function (req, res, next) {
-    model.hotels.selectAll(function (err, hotels) {
+    model.selectAll("hotels", function (err, hotels) {
         renderWithAlerts(req, res, "index", {
             guest: req.user,
             hotels: hotels,

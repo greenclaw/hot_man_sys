@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS people (
 CREATE TABLE IF NOT EXISTS users (
 	username VARCHAR(50) UNIQUE,
 	email VARCHAR(50) CONSTRAINT email_must_unique UNIQUE NOT NULL,
-	user_password VARCHAR(30) NOT NULL,
+	user_password VARCHAR(60) NOT NULL,
 	CONSTRAINT pk_users PRIMARY KEY (id)
 ) INHERITS (people);
 

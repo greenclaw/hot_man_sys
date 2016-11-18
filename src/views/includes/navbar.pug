@@ -1,4 +1,4 @@
-nav.navbar.navbar-fixed-top.navbar-light.bg-faded
+nav.navbar.navbar-fixed-top.navbar-dark.bg-primary
 
     button(type="button" data-toggle="collapse" data-target="#navbarResponsive" 
             aria-controls="navbarResponsive" aria-expanded="false" 
@@ -9,7 +9,7 @@ nav.navbar.navbar-fixed-top.navbar-light.bg-faded
     .collapse.navbar-toggleable-md#navbarResponsive
         ul.nav.navbar-nav
             // if logged in
-            if guest
+            if guest != undefined
                 li.nav-item
                     a(href='/profile' title='My Profile').nav-link My Profile
                 li.nav-item
@@ -18,6 +18,6 @@ nav.navbar.navbar-fixed-top.navbar-light.bg-faded
                     a(href='/logout' title='Log Out').nav-link Log Out
             else
                 li.nav-item
-                    a(href='/login' title='Log In').nav-link Log In
+                    a(href='/login' title='Log In').nav-link.px-1 Log In
                 li.nav-item
-                    a(href='/signup' title='Sign Up').nav-link Sign Up
+                    a(href='/signup' title='Sign Up').nav-link.px-1 Sign Up

@@ -10,8 +10,8 @@ const passport = require('passport')
 import * as model from '../model'
 import * as schemas from '../models/schemas/schemas'
 
-const renderWithAlerts = (req: express.Request, res: express.Response, 
-    view: string, options: Object) => {
+export function renderWithAlerts(req: express.Request, res: express.Response, 
+    view: string, options: Object) {
   res.render(view, (Object as any).assign(
     {
       danger:  req.flash(`danger`),
@@ -25,7 +25,7 @@ const renderWithAlerts = (req: express.Request, res: express.Response,
 
 // GET index page
 index.get('/', (req, res, next) => {
-  model.hotels.selectAll((err, hotels: schemas.Hotel[]) => {
+  model.selectAll(`hotels`, (err, hotels: schemas.Hotel[]) => {
     renderWithAlerts(req, res, `index`, {
       guest: req.user,
       hotels,
