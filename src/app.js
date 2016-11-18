@@ -138,18 +138,18 @@ passport.use('login', new LocalStrategy({
         done(null, guest, req.flash("success", "Successful login for " + email));
     });
 }));
-passport.serializeUser(function (user, done) {
-    console.log("Serializing guest " + user.email);
-    done(null, user.email);
+passport.serializeUser(function (guest, done) {
+    console.log("Serializing guest " + guest.email);
+    done(null, guest.email);
 });
-passport.deserializeUser(function (user, done) {
-    model.guests.selectOne('email', user, function (err, user) {
+passport.deserializeUser(function (email, done) {
+    model.guests.selectOne('email', email, function (err, guest) {
         if (err) {
             console.log("Serializing error: " + err);
             return done(err);
         }
-        console.log("Deserializing guest " + user);
-        done(null, user);
+        console.log("Deserializing guest " + email);
+        done(null, guest);
     });
 });
 Object.defineProperty(exports, "__esModule", { value: true });
